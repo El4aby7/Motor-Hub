@@ -95,11 +95,15 @@
 <body class="bg-background text-on-surface min-h-screen flex flex-col">
     <!-- TopNavBar -->
     <nav class="fixed top-0 w-full z-50 bg-neutral-900/80 backdrop-blur-xl flex justify-between items-center px-4 md:px-12 py-5 shadow-2xl shadow-yellow-500/10">
+        <!-- Clickable Logo/Brand -->
         <a href="index.html" class="site-brand text-2xl font-black tracking-tighter text-primary hover:opacity-80 transition-opacity">MOTOR HUB</a>
 
         <!-- Desktop Nav -->
         <div class="hidden md:flex gap-10 items-center">
             <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors text-sm" href="inventory.html" data-i18n="nav_inventory">Inventory</a>
+            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors text-sm" href="favorites.html" data-i18n="nav_favorites">Favorites</a>
+            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors text-sm" href="trading.html" data-i18n="nav_trading">Sell / Trade</a>
+            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors text-sm" href="about.html" data-i18n="nav_about">About</a>
             <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors text-sm" href="contact.html" data-i18n="nav_contact">Contact</a>
 
             <!-- Toggles -->
@@ -116,6 +120,9 @@
     <!-- Mobile Drawer (Hidden by default) -->
     <div id="mobile-drawer" class="fixed inset-0 bg-neutral-900/95 backdrop-blur-3xl z-40 translate-x-full transition-transform duration-300 flex flex-col pt-28 px-6 pb-12">
         <a class="text-2xl font-bold uppercase text-white mb-6" href="inventory.html" data-i18n="nav_inventory">Inventory</a>
+        <a class="text-2xl font-bold uppercase text-white mb-6" href="favorites.html" data-i18n="nav_favorites">Favorites</a>
+        <a class="text-2xl font-bold uppercase text-white mb-6" href="trading.html" data-i18n="nav_trading">Sell / Trade</a>
+        <a class="text-2xl font-bold uppercase text-white mb-6" href="about.html" data-i18n="nav_about">About</a>
         <a class="text-2xl font-bold uppercase text-white mb-12" href="contact.html" data-i18n="nav_contact">Contact</a>
         <button id="mobile-lang-toggle" class="nav-toggle-btn text-left mb-4 w-fit">Switch to AR</button>
         <button id="mobile-currency-toggle" class="nav-toggle-btn text-left w-fit">Switch Currency</button>
@@ -127,15 +134,6 @@
             <div class="max-w-2xl">
                 <span class="text-primary tracking-[0.2em] font-bold text-xs uppercase block mb-4">Elite Collection</span>
                 <h1 class="text-5xl md:text-8xl font-extrabold tracking-tighter leading-none mb-8">PREMIER<br/><span class="text-neutral-500">INVENTORY</span></h1>
-
-                <!-- Brand Filter (Chips) -->
-                <div class="flex flex-col gap-3">
-                    <span class="text-[10px] uppercase tracking-widest text-outline-variant font-bold">Marque</span>
-                    <div id="brand-chips" class="flex flex-wrap gap-2">
-                        <button class="brand-chip bg-white/10 text-white px-4 py-2 text-xs font-bold uppercase tracking-widest hover:bg-white/20 transition-colors border border-primary" data-brand="">All</button>
-                        <!-- Injected via JS -->
-                    </div>
-                </div>
             </div>
 
             <div class="flex flex-col gap-6 w-full md:w-[400px]">
@@ -170,6 +168,15 @@
                     <div class="range-slider-container mt-2">
                         <input id="price-min" type="range" min="0" max="1000000" step="10000" value="0">
                         <input id="price-max" type="range" min="0" max="1000000" step="10000" value="1000000">
+                    </div>
+                </div>
+                
+                <!-- Brand Filter (Logos) -->
+                <div class="flex flex-col gap-2 mt-4 border-t border-outline-variant/30 pt-4">
+                    <span class="text-[10px] uppercase tracking-widest text-outline-variant font-bold mb-2">Marque</span>
+                    <div id="brand-chips" class="flex flex-wrap gap-3">
+                        <button class="brand-chip w-16 h-16 bg-surface-container-low border border-primary text-[10px] text-white font-bold uppercase tracking-widest transition-colors flex items-center justify-center rounded p-2" data-brand="">All</button>
+                        <!-- Injected via JS -->
                     </div>
                 </div>
             </div>
@@ -213,9 +220,9 @@
         const priceDisplay = document.getElementById('price-display');
         const colorDotsContainer = document.getElementById('color-dots');
 
-        function formatPriceFull(usdPrice) {
-            if (!usdPrice) return 'Upon Request';
-            const price = currentCurrency === 'USD' ? usdPrice : usdPrice * exchangeRate;
+        function formatPriceFull(egpPrice) {
+            if (!egpPrice) return 'Upon Request';
+            const price = currentCurrency === 'EGP' ? egpPrice : egpPrice / exchangeRate;
             return new Intl.NumberFormat('en-US', { style: 'currency', currency: currentCurrency, maximumFractionDigits: 0 }).format(price);
         }
 
@@ -241,12 +248,21 @@
         }
 
         function populateFilters() {
-            // Populate Brand Chips
+            // Populate Brand Chips with Logos
             allBrands.forEach(b => {
                 const btn = document.createElement('button');
-                btn.className = 'brand-chip bg-surface-container-low text-neutral-400 px-4 py-2 text-xs font-bold uppercase tracking-widest hover:bg-white/10 hover:text-white transition-colors border border-transparent';
+                btn.className = 'brand-chip w-16 h-16 bg-surface-container-low border border-transparent hover:border-primary transition-all flex items-center justify-center rounded p-2 grayscale hover:grayscale-0 opacity-60 hover:opacity-100 hover:scale-105';
                 btn.setAttribute('data-brand', b.id);
-                btn.textContent = b.name;
+                if (b.logo_url) {
+                    const img = document.createElement('img');
+                    img.src = b.logo_url;
+                    img.alt = b.name;
+                    img.className = 'max-w-full max-h-full object-contain pointer-events-none drop-shadow-lg';
+                    btn.appendChild(img);
+                } else {
+                    btn.classList.add('text-[10px]', 'text-neutral-400', 'font-bold', 'uppercase', 'tracking-widest');
+                    btn.textContent = b.name.substring(0, 4);
+                }
                 brandChipsContainer.appendChild(btn);
             });
 
@@ -254,12 +270,13 @@
             document.querySelectorAll('.brand-chip').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     document.querySelectorAll('.brand-chip').forEach(b => {
-                        b.classList.remove('border-primary', 'bg-white/10', 'text-white');
-                        b.classList.add('bg-surface-container-low', 'border-transparent', 'text-neutral-400');
+                        b.classList.remove('border-primary', 'grayscale-0', 'opacity-100');
+                        b.classList.add('border-transparent', 'grayscale', 'opacity-60');
                     });
-                    e.target.classList.add('border-primary', 'bg-white/10', 'text-white');
-                    e.target.classList.remove('bg-surface-container-low', 'border-transparent', 'text-neutral-400');
-                    selectedBrandId = e.target.getAttribute('data-brand');
+                    const targetBtn = e.target.closest('.brand-chip');
+                    targetBtn.classList.add('border-primary', 'grayscale-0', 'opacity-100');
+                    targetBtn.classList.remove('border-transparent', 'grayscale', 'opacity-60');
+                    selectedBrandId = targetBtn.getAttribute('data-brand');
                     filterAndRender();
                 });
             });
@@ -313,8 +330,8 @@
                 });
             });
 
-            // Dynamically set price boundaries based on inventory
-            const prices = allVehicles.map(v => v.price_usd).filter(p => typeof p === 'number');
+            // Dynamically set price boundaries based on inventory using EGP
+            const prices = allVehicles.map(v => v.price_egp).filter(p => typeof p === 'number');
             if (prices.length > 0) {
                 let absoluteMin = Math.min(...prices);
                 let absoluteMax = Math.max(...prices);
@@ -344,25 +361,25 @@
             // Update price display dynamically with currency
             if (currentCurrency === 'EGP') {
                 const minEGP = minP * exchangeRate;
-                const maxEGP = maxP * exchangeRate;
+                const maxEGP = maxP;
                 const fmtMin = new Intl.NumberFormat('en-US').format(minEGP) + ' EGP';
                 const fmtMax = new Intl.NumberFormat('en-US').format(maxEGP) + (maxP === parseInt(priceMax.max) ? '+ EGP' : ' EGP');
                 priceDisplay.textContent = `${fmtMin} – ${fmtMax}`;
             } else {
-                const fmtMin = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(minP);
-                const fmtMax = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(maxP) + (maxP === parseInt(priceMax.max) ? '+' : '');
+                const fmtMin = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(minP / exchangeRate);
+                const fmtMax = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(maxP / exchangeRate) + (maxP === parseInt(priceMax.max) ? '+' : '');
                 priceDisplay.textContent = `${fmtMin} – ${fmtMax}`;
             }
 
             const filtered = allVehicles.filter(v => {
-                const matchSearch = v.name.toLowerCase().includes(searchTerm) || (v.version && v.version.toLowerCase().includes(searchTerm));
+                const matchSearch = v.name.toLowerCase().includes(searchTerm) || (v.name_ar && v.name_ar.includes(searchTerm)) || (v.version && v.version.toLowerCase().includes(searchTerm));
                 const matchBrand = !selectedBrandId || v.brand_id === selectedBrandId;
                 const matchCategory = !categoryId || v.category_id === categoryId;
                 let matchColor = !selectedColorHex;
                 if (selectedColorHex && v.colors) {
                     matchColor = v.colors.some(c => c.hex === selectedColorHex);
                 }
-                const matchPrice = !v.price_usd || (v.price_usd >= minP && v.price_usd <= maxP);
+                const matchPrice = !v.price_egp || (v.price_egp >= minP && v.price_egp <= maxP);
                 return matchSearch && matchBrand && matchCategory && matchColor && matchPrice;
             });
 
@@ -402,11 +419,12 @@
                 const favColor = isFav ? 'text-red-500' : 'text-white hover:text-red-500';
 
                 const eId = escapeHTML(v.id);
-                const eName = escapeHTML(v.name);
+                const eName = currentLang === 'ar' && v.name_ar ? escapeHTML(v.name_ar) : escapeHTML(v.name);
                 const eImg = escapeHTML(v.image_url);
                 const eVersion = escapeHTML(v.version || 'Base Model');
-                const ePrice = formatPriceFull(v.price_usd);
+                const ePrice = formatPriceFull(v.price_egp);
                 const eEngine = escapeHTML(v.engine || 'N/A');
+                const eYear = escapeHTML(v.year || v.version || '2024');
                 const eMileage = escapeHTML(v.mileage ? v.mileage + ' KM' : 'New');
 
                 return `
@@ -432,8 +450,8 @@
                         </div>
                         <div class="grid grid-cols-2 gap-y-4 border-t border-outline-variant/20 pt-6">
                             <div>
-                                <span class="text-[10px] uppercase tracking-widest text-primary font-bold block">Engine</span>
-                                <span class="text-sm font-medium">${eEngine}</span>
+                                <span class="text-[10px] uppercase tracking-widest text-primary font-bold block">Year</span>
+                                <span class="text-sm font-medium">${eYear}</span>
                             </div>
                             <div>
                                 <span class="text-[10px] uppercase tracking-widest text-primary font-bold block">Mileage</span>
@@ -547,6 +565,7 @@
                 currentLang = currentLang === 'en' ? 'ar' : 'en';
                 localStorage.setItem('lang', currentLang);
                 applyLanguage();
+                if (typeof filterAndRender === 'function') filterAndRender();
             });
         }
 
@@ -556,6 +575,7 @@
                 currentLang = currentLang === 'en' ? 'ar' : 'en';
                 localStorage.setItem('lang', currentLang);
                 applyLanguage();
+                if (typeof filterAndRender === 'function') filterAndRender();
             });
         }
 

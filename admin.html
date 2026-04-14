@@ -100,7 +100,7 @@
                             <tr>
                                 <th class="p-4 w-10"></th>
                                 <th class="p-4">Name</th>
-                                <th class="p-4">Price (USD)</th>
+                                <th class="p-4">Price (EGP)</th>
                                 <th class="p-4">Status</th>
                                 <th class="p-4">Spotlight</th>
                                 <th class="p-4">Actions</th>
@@ -259,7 +259,7 @@
         import { supabase, getVehicles, createVehicle, updateVehicle, deleteVehicle } from './products.js';
         import { getBrands, createBrand, updateBrand, deleteBrand } from './brands.js';
         import { getCategories, createCategory, updateCategory, deleteCategory } from './categories.js';
-        import { getMessages, markMessageRead } from './messages.js';
+        import { getMessages, markMessageRead, markMessageUnread, deleteMessage } from './messages.js';
         import { getSettings, updateSettings, subscribeToSettings } from './settings.js';
         import { uploadImage } from './storage.js';
 
@@ -319,6 +319,10 @@
             crudType.value = type;
             crudId.value = id || '';
             let data = dataStr ? JSON.parse(decodeURIComponent(dataStr)) : {};
+            
+            // Ensure submit button is visible (it might have been hidden by viewInquiry)
+            const submitBtn = document.querySelector('#crud-form button[type="submit"]');
+            if (submitBtn) submitBtn.style.display = 'block';
 
             const modalBox = document.getElementById('crud-modal-box');
             if (type === 'product') {
@@ -381,8 +385,12 @@
                                     <input id="f-fuel" value="${escapeHTML(data.fuel_type || '')}" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm" placeholder="Petrol" />
                                 </div>
                                 <div>
-                                    <label class="block text-[11px] text-neutral-400 mb-1">Version/Year</label>
-                                    <input id="f-version" value="${escapeHTML(data.version || data.year || '')}" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm" placeholder="2024" />
+                                    <label class="block text-[11px] text-neutral-400 mb-1">Version</label>
+                                    <input id="f-version" value="${escapeHTML(data.version || '')}" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm" placeholder="Standard" />
+                                </div>
+                                <div class="col-span-2 md:col-span-1">
+                                    <label class="block text-[11px] text-neutral-400 mb-1">Year</label>
+                                    <input id="f-year" type="number" value="${data.year || ''}" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm" placeholder="2024" />
                                 </div>
                             </div>
                         </div>
@@ -457,8 +465,8 @@
                 `;
 
                 // GLOBAL STATE FOR MODAL
-                window.modalColors = data.colors ? (typeof data.colors === 'string' ? JSON.parse(data.colors) : data.colors) : [];
-                window.modalGlobalGalleryUrls = data.gallery || data.gallery_urls || [];
+                window.modalColors = data.colors ? (typeof data.colors === 'string' ? JSON.parse(data.colors) : data.colors) : (data.colors || []);
+                window.modalGlobalGalleryUrls = data.gallery ? (typeof data.gallery === 'string' ? JSON.parse(data.gallery) : data.gallery) : (data.gallery_urls || []);
                 window.modalFilesQueue = []; // { type: 'gallery'|'color', cid: null, file: File }
 
                 // RENDER FUNCTIONS
@@ -502,9 +510,9 @@
                     const gg = document.getElementById('v-gallery-preview');
                     if(!gg) return;
                     let html = window.modalGlobalGalleryUrls.map((url, i) => `
-                        <div class="relative group">
-                           <img src="${url}" class="h-20 w-full object-cover rounded border border-outline-variant" />
-                           <button type="button" class="absolute top-1 right-1 bg-black/80 text-red-500 rounded p-1 hidden group-hover:block" onclick="window.removeGlobalGallery(${i})"><span class="material-symbols-outlined text-[10px]">close</span></button>
+                        <div class="relative group cursor-move" draggable="true" ondragstart="window.dragStart(event, ${i}, 'global')" ondragover="event.preventDefault()" ondrop="window.dropGlobal(event, ${i})">
+                           <img src="${url}" class="h-20 w-full object-cover rounded border border-outline-variant pointer-events-none" />
+                           <button type="button" class="absolute top-1 right-1 bg-black/80 text-red-500 rounded p-1 hidden group-hover:block z-10" onclick="window.removeGlobalGallery(${i})"><span class="material-symbols-outlined text-[10px]">close</span></button>
                         </div>
                     `).join('');
                     // Queue UI
@@ -521,6 +529,22 @@
                     renderColors();
                 };
                 window.removeGlobalGallery = (i) => { window.modalGlobalGalleryUrls.splice(i, 1); renderGlobalGallery(); };
+
+                window.dragStart = (event, index, type) => {
+                    event.dataTransfer.setData('index', index);
+                    event.dataTransfer.setData('type', type);
+                };
+                window.dropGlobal = (event, dropIndex) => {
+                    event.preventDefault();
+                    if(!event.dataTransfer.getData('index')) return;
+                    const dragIndex = parseInt(event.dataTransfer.getData('index'));
+                    const dragType = event.dataTransfer.getData('type');
+                    if (dragType !== 'global' || dragIndex === dropIndex) return;
+                    
+                    const item = window.modalGlobalGalleryUrls.splice(dragIndex, 1)[0];
+                    window.modalGlobalGalleryUrls.splice(dropIndex, 0, item);
+                    renderGlobalGallery();
+                };
 
                 // Handle file input text replacement instantly for UI
                 requestAnimationFrame(() => {
@@ -605,6 +629,7 @@
         document.getElementById('close-crud-modal').addEventListener('click', () => {
             crudModal.classList.add('hidden');
             crudModal.classList.remove('flex');
+            document.querySelector('#crud-form button[type="submit"]').style.display = 'block'; // reset
         });
 
         document.getElementById('crud-form').addEventListener('submit', async (e) => {
@@ -658,6 +683,7 @@
                         transmission: document.getElementById('f-transmission').value || null,
                         fuel_type: document.getElementById('f-fuel').value || null,
                         version: document.getElementById('f-version').value || null,
+                        year: document.getElementById('f-year').value ? parseInt(document.getElementById('f-year').value) : null,
                         description: document.getElementById('f-desc').value || null,
                         description_ar: document.getElementById('f-desc-ar').value || null,
                         image_url: finalMainUrl || null,
@@ -741,7 +767,7 @@
                             <span class="material-symbols-outlined">drag_indicator</span>
                         </td>
                         <td class="p-4 font-bold text-white">${escapeHTML(v.name)}</td>
-                        <td class="p-4 text-primary">${escapeHTML(v.price_usd ? '$'+v.price_usd.toLocaleString() : 'N/A')}</td>
+                        <td class="p-4 text-primary">${escapeHTML(v.price_egp ? '£' + v.price_egp.toLocaleString() : 'N/A')}</td>
                         <td class="p-4">${v.is_sold_out ? '<span class="text-red-500 text-xs tracking-widest uppercase">Sold Out</span>' : '<span class="text-green-500 text-xs tracking-widest uppercase">Available</span>'}</td>
                         <td class="p-4">${v.is_spotlight ? 'Yes' : 'No'}</td>
                         <td class="p-4 flex gap-4 text-xs font-bold uppercase tracking-widest justify-end">
@@ -899,8 +925,11 @@
                         <td class="p-4 font-bold">${escapeHTML(m.name)}</td>
                         <td class="p-4 text-neutral-300 truncate max-w-[200px]">${escapeHTML(m.subject)}</td>
                         <td class="p-4">${m.is_read ? '<span class="text-neutral-500 text-[10px] tracking-widest uppercase font-bold">Read</span>' : '<span class="text-primary text-[10px] tracking-widest uppercase font-bold">Unread</span>'}</td>
-                        <td class="p-4 text-right">
-                            ${!m.is_read ? `<button class="text-xs text-primary font-bold uppercase tracking-widest hover:text-white" onclick="window.markRead('${escapeHTML(m.id)}')">Mark Read</button>` : ''}
+                        <td class="p-4 text-right flex justify-end items-center gap-4">
+                            <button class="text-xs text-white font-bold uppercase tracking-widest hover:text-primary" onclick="window.viewInquiry('${escapeHTML(m.id)}')">View</button>
+                            ${!m.is_read ? `<button class="text-xs text-primary font-bold uppercase tracking-widest hover:text-white" onclick="window.markRead('${escapeHTML(m.id)}')">Mark Read</button>` 
+                                         : `<button class="text-xs text-neutral-500 font-bold uppercase tracking-widest hover:text-white" onclick="window.markUnread('${escapeHTML(m.id)}')">Mark Unread</button>`}
+                            <button class="text-xs text-red-500 font-bold uppercase tracking-widest hover:text-red-400" onclick="window.deleteInquiry('${escapeHTML(m.id)}')">Delete</button>
                         </td>
                     </tr>
                 `).join('');
@@ -916,6 +945,62 @@
                 console.error("Failed to mark as read");
             }
         }
+        window.markUnread = async function(id) {
+            try {
+                await markMessageUnread(id);
+                renderInquiriesTable();
+            } catch(e) {
+                console.error("Failed to mark as unread");
+            }
+        }
+        window.deleteInquiry = async function(id) {
+            if(!confirm('Are you sure you want to delete this inquiry?')) return;
+            try {
+                await deleteMessage(id);
+                renderInquiriesTable();
+            } catch(e) {
+                console.error("Failed to delete inquiry");
+            }
+        }
+        
+        window.allInquiries = []; // cache array for view rendering
+        
+        window.viewInquiry = async function(id) {
+            const msgs = await getMessages();
+            const m = msgs.find(x => x.id === id);
+            if (!m) return;
+            // Parse message text, converting http links to anchor tags or images
+            let fMsg = escapeHTML(m.message || '').replace(/(https?:\/\/[^\s]+)/g, url => {
+                if(url.match(/\\.(jpeg|jpg|gif|png|webp|avif)$/i) || url.includes('supabase.co/storage')) {
+                    return `<a href="${url}" target="_blank" class="block my-2 border border-outline-variant p-1 rounded max-w-sm"><img src="${url}" class="w-full h-auto rounded" /></a>`;
+                }
+                return `<a href="${url}" target="_blank" class="text-primary underline">${url}</a>`;
+            });
+            // We use crud model to display read only view
+            document.getElementById('crud-type').value = 'view-inquiry';
+            document.getElementById('modal-title').textContent = 'Inquiry Details';
+            const modalBox = document.getElementById('crud-modal-box');
+            modalBox.classList.remove('max-w-4xl');
+            modalBox.classList.add('max-w-xl');
+            document.getElementById('crud-form-fields').innerHTML = `
+                <div class="space-y-4">
+                    <div><span class="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Name</span><p class="text-white text-sm font-medium mt-1">${escapeHTML(m.name)}</p></div>
+                    <div><span class="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Email</span><a href="mailto:${escapeHTML(m.email)}" class="text-primary text-sm font-medium mt-1">${escapeHTML(m.email)}</a></div>
+                    <div><span class="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Phone</span><a href="tel:${escapeHTML(m.phone || '')}" class="text-primary text-sm font-medium mt-1">${escapeHTML(m.phone || 'N/A')}</a></div>
+                    <div><span class="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Subject</span><p class="text-white text-sm font-medium mt-1">${escapeHTML(m.subject)}</p></div>
+                    <div class="border-t border-outline-variant pt-4"><span class="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-2">Message Content</span><div class="text-neutral-300 text-sm whitespace-pre-wrap leading-relaxed">${fMsg}</div></div>
+                </div>
+            `;
+            // hide submit button
+            document.querySelector('#crud-form button[type="submit"]').style.display = 'none';
+            document.getElementById('crud-modal').classList.remove('hidden');
+            document.getElementById('crud-modal').classList.add('flex');
+            
+            // Mark read if unread automatically? Optional.
+            if (!m.is_read) {
+                window.markRead(m.id);
+            }
+        };
 
         async function renderSettingsForm() {
             try {

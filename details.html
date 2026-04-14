@@ -57,11 +57,15 @@
 <body class="bg-background text-on-surface min-h-screen flex flex-col">
     <!-- TopNavBar -->
     <nav class="fixed top-0 w-full z-50 bg-neutral-900/80 backdrop-blur-xl flex justify-between items-center px-4 md:px-12 py-5 shadow-2xl shadow-yellow-500/10">
+        <!-- Clickable Logo/Brand -->
         <a href="index.html" class="site-brand text-2xl font-black tracking-tighter text-primary hover:opacity-80 transition-opacity">MOTOR HUB</a>
 
         <!-- Desktop Nav -->
         <div class="hidden md:flex gap-10 items-center">
             <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors text-sm" href="inventory.html" data-i18n="nav_inventory">Inventory</a>
+            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors text-sm" href="favorites.html" data-i18n="nav_favorites">Favorites</a>
+            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors text-sm" href="trading.html" data-i18n="nav_trading">Sell / Trade</a>
+            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors text-sm" href="about.html" data-i18n="nav_about">About</a>
             <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors text-sm" href="contact.html" data-i18n="nav_contact">Contact</a>
 
             <!-- Toggles -->
@@ -78,6 +82,9 @@
     <!-- Mobile Drawer (Hidden by default) -->
     <div id="mobile-drawer" class="fixed inset-0 bg-neutral-900/95 backdrop-blur-3xl z-40 translate-x-full transition-transform duration-300 flex flex-col pt-28 px-6 pb-12">
         <a class="text-2xl font-bold uppercase text-white mb-6" href="inventory.html" data-i18n="nav_inventory">Inventory</a>
+        <a class="text-2xl font-bold uppercase text-white mb-6" href="favorites.html" data-i18n="nav_favorites">Favorites</a>
+        <a class="text-2xl font-bold uppercase text-white mb-6" href="trading.html" data-i18n="nav_trading">Sell / Trade</a>
+        <a class="text-2xl font-bold uppercase text-white mb-6" href="about.html" data-i18n="nav_about">About</a>
         <a class="text-2xl font-bold uppercase text-white mb-12" href="contact.html" data-i18n="nav_contact">Contact</a>
         <button id="mobile-lang-toggle" class="nav-toggle-btn text-left mb-4 w-fit">Switch to AR</button>
         <button id="mobile-currency-toggle" class="nav-toggle-btn text-left w-fit">Switch Currency</button>
@@ -218,15 +225,15 @@
             if (settings && settings.usd_to_egp_rate) exchangeRate = settings.usd_to_egp_rate;
         } catch(e) {}
 
-        function formatPrice(usdPrice) {
-            if (!usdPrice) return 'Upon Request';
-            const price = currentCurrency === 'USD' ? usdPrice : usdPrice * exchangeRate;
+        function formatPrice(egpPrice) {
+            if (!egpPrice) return 'Upon Request';
+            const price = currentCurrency === 'EGP' ? egpPrice : egpPrice / exchangeRate;
             return new Intl.NumberFormat('en-US', { style: 'currency', currency: currentCurrency, maximumFractionDigits: 0 }).format(price);
         }
 
         function updatePriceDisplay() {
             if (!currentVehicle) return;
-            document.getElementById('vehicle-price').textContent = formatPrice(currentVehicle.price_usd);
+            document.getElementById('vehicle-price').textContent = formatPrice(currentVehicle.price_egp);
         }
 
         async function init() {
@@ -267,19 +274,22 @@
 
         function renderDetails() {
             const v = currentVehicle;
+            
+            const name = currentLang === 'ar' && v.name_ar ? v.name_ar : v.name;
+            const desc = currentLang === 'ar' && v.description_ar ? v.description_ar : v.description;
 
-            document.getElementById('breadcrumb-name').textContent = v.name;
-            document.getElementById('vehicle-name').textContent = v.name;
+            document.getElementById('breadcrumb-name').textContent = name;
+            document.getElementById('vehicle-name').textContent = name;
             document.getElementById('vehicle-version').textContent = v.version || '';
-            document.getElementById('vehicle-price').textContent = formatPrice(v.price_usd);
+            document.getElementById('vehicle-price').textContent = formatPrice(v.price_egp);
 
             document.getElementById('spec-mileage').textContent = v.mileage ? v.mileage + ' KM' : 'New';
             document.getElementById('spec-transmission').textContent = v.transmission || 'Auto';
             document.getElementById('spec-fuel').textContent = v.fuel_type || 'Gasoline';
-            document.getElementById('spec-year').textContent = v.year || '2024';
+            document.getElementById('spec-year').textContent = v.year || v.version || 'N/A';
 
             const descEl = document.getElementById('vehicle-description');
-            descEl.textContent = v.description || 'No description available.';
+            descEl.textContent = desc || 'No description available.';
 
             document.getElementById('main-image').src = v.image_url;
 
@@ -493,6 +503,7 @@
                 currentLang = currentLang === 'en' ? 'ar' : 'en';
                 localStorage.setItem('lang', currentLang);
                 applyLanguage();
+                renderDetails();
             });
         }
 
@@ -502,6 +513,7 @@
                 currentLang = currentLang === 'en' ? 'ar' : 'en';
                 localStorage.setItem('lang', currentLang);
                 applyLanguage();
+                renderDetails();
             });
         }
 

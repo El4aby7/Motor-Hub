@@ -5,7 +5,8 @@ const htmlFiles = [
     'about.html',
     'contact.html',
     'favorites.html',
-    'details.html'
+    'details.html',
+    'trading.html'
 ];
 
 const indexHtml = fs.readFileSync('index.html', 'utf8');
@@ -100,6 +101,10 @@ if (navMatch && drawerMatch && fabMatch) {
                 newFileNavMatch = newFileNavMatch.replace(/href="about.html" class="[^"]*"/, 'href="about.html" class="font-manrope tracking-tight font-bold uppercase text-primary border-b-2 border-primary pb-1"');
             } else if (file === 'contact.html') {
                 newFileNavMatch = newFileNavMatch.replace(/href="contact.html" class="[^"]*"/, 'href="contact.html" class="font-manrope tracking-tight font-bold uppercase text-primary border-b-2 border-primary pb-1"');
+            } else if (file === 'favorites.html') {
+                newFileNavMatch = newFileNavMatch.replace(/href="favorites.html" class="[^"]*"/, 'href="favorites.html" class="font-manrope tracking-tight font-bold uppercase text-primary border-b-2 border-primary pb-1"');
+            } else if (file === 'trading.html') {
+                newFileNavMatch = newFileNavMatch.replace(/href="trading.html" class="[^"]*"/, 'href="trading.html" class="font-manrope tracking-tight font-bold uppercase text-primary border-b-2 border-primary pb-1"');
             }
 
             content = content.replace(currNavMatch[0], newFileNavMatch);

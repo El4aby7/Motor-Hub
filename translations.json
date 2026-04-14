@@ -2,6 +2,9 @@
   "en": {
     "nav_inventory": "Inventory",
     "nav_financing": "Financing",
+    "nav_favorites": "Favorites",
+    "nav_trading": "Sell / Trade",
+    "nav_about": "About",
     "nav_contact": "Contact",
     "btn_book_concierge": "Book Concierge",
     "home_title": "CONNECT WITH ELITE",
@@ -18,6 +21,9 @@
   "ar": {
     "nav_inventory": "المخزون",
     "nav_financing": "التمويل",
+    "nav_favorites": "المفضلة",
+    "nav_trading": "بيع / استبدال",
+    "nav_about": "عن المركز",
     "nav_contact": "اتصل بنا",
     "btn_book_concierge": "حجز خدمة الكونسيرج",
     "home_title": "تواصل مع النخبة",
