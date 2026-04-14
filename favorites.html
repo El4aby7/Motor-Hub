@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Motor Hub - Favorites</title>
+    <link href="https://fonts.googleapis.com/css2?family=Metropolis:wght@400;500;700&family=Domine:wght@400;500;700&family=Lexend:wght@400;500;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#f2ca50",
+                        background: "#131313",
+                        surface: "#131313",
+                        "on-surface": "#e5e2e1",
+                        "surface-container-low": "#1c1b1b",
+                        "outline-variant": "#4d4635"
+                    }
+                }
+            }
+        };
+    </script>
+</head>
+<body class="bg-background text-on-surface min-h-screen flex flex-col">
+    <!-- TopNavBar -->
+    <nav class="fixed top-0 w-full z-50 bg-neutral-900/80 backdrop-blur-xl flex justify-between items-center px-6 md:px-12 py-6 shadow-2xl shadow-yellow-500/10">
+        <div class="text-2xl font-black tracking-tighter text-primary">MOTOR HUB</div>
+
+        <!-- Desktop Nav -->
+        <div class="hidden md:flex gap-12 items-center">
+            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors" href="inventory.html" data-i18n="nav_inventory">Inventory</a>
+            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors" href="about.html" data-i18n="nav_financing">Financing</a>
+            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors" href="contact.html" data-i18n="nav_contact">Contact</a>
+
+            <!-- Toggles -->
+            <button id="lang-toggle" class="text-xs uppercase tracking-widest text-primary border border-primary/30 px-3 py-1 hover:bg-white/5">AR</button>
+            <button id="currency-toggle" class="text-xs uppercase tracking-widest text-primary border border-primary/30 px-3 py-1 hover:bg-white/5" data-currency="USD">USD</button>
+        </div>
+
+        <button class="hidden md:block font-manrope tracking-tight font-bold uppercase text-primary border border-primary/30 px-6 py-2 hover:bg-white/5 transition-all scale-95 duration-300" data-i18n="btn_book_concierge">
+            Book Concierge
+        </button>
+
+        <!-- Mobile Menu Button -->
+        <button id="mobile-menu-btn" class="md:hidden text-primary">
+            <span class="material-symbols-outlined">menu</span>
+        </button>
+    </nav>
+
+    <!-- Mobile Drawer (Hidden by default) -->
+    <div id="mobile-drawer" class="fixed inset-0 bg-neutral-900/95 backdrop-blur-3xl z-40 translate-x-full transition-transform duration-300 flex flex-col pt-32 px-6 pb-12">
+        <a class="text-2xl font-bold uppercase text-white mb-6" href="inventory.html" data-i18n="nav_inventory">Inventory</a>
+        <a class="text-2xl font-bold uppercase text-white mb-6" href="about.html" data-i18n="nav_financing">Financing</a>
+        <a class="text-2xl font-bold uppercase text-white mb-12" href="contact.html" data-i18n="nav_contact">Contact</a>
+        <button id="mobile-lang-toggle" class="text-lg uppercase text-primary mb-4 text-left">Switch to AR</button>
+        <button id="mobile-currency-toggle" class="text-lg uppercase text-primary text-left">Switch Currency</button>
+    </div>
+
+    <main class="pt-32 pb-24 px-6 md:px-12 max-w-[1600px] mx-auto w-full flex-grow">
+        <header class="mb-16">
+            <h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter leading-none mb-4 text-white">YOUR<br/><span class="text-primary">COLLECTION</span></h1>
+            <p class="text-neutral-500 uppercase tracking-widest text-sm">Saved Vehicles</p>
+        </header>
+
+        <div id="favorites-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-24">
+            <!-- Loading State -->
+            <div class="col-span-full text-center text-neutral-500 py-12">Loading favorites...</div>
+        </div>
+    </main>
+
+    <script type="module">
+        import { getVehicles } from './products.js';
+
+        const grid = document.getElementById('favorites-grid');
+
+        async function init() {
+            try {
+                const favIds = JSON.parse(localStorage.getItem('favorites') || '[]');
+
+                if (favIds.length === 0) {
+                    renderEmptyState();
+                    return;
+                }
+
+                // In a real app we might fetch only specific IDs. Here we fetch all and filter.
+                const allVehicles = await getVehicles();
+                const favVehicles = allVehicles.filter(v => favIds.includes(v.id));
+
+                if (favVehicles.length === 0) {
+                    renderEmptyState();
+                } else {
+                    renderGrid(favVehicles);
+                }
+
+            } catch (err) {
+                grid.innerHTML = '<div class="col-span-full text-red-500 text-center py-12">Failed to load favorites.</div>';
+                console.error(err);
+            }
+        }
+
+        function renderEmptyState() {
+            grid.innerHTML = `
+                <div class="col-span-full bg-surface-container-low p-16 text-center border border-outline-variant/30 flex flex-col items-center justify-center">
+                    <span class="material-symbols-outlined text-outline-variant text-6xl mb-6">heart_broken</span>
+                    <h3 class="text-3xl font-bold tracking-tight uppercase text-white mb-4">No Vehicles Saved</h3>
+                    <p class="text-neutral-400 text-sm uppercase tracking-widest mb-8">Your curated collection is currently empty.</p>
+                    <a href="inventory.html" class="bg-primary text-black font-bold uppercase tracking-widest text-xs px-8 py-4 hover:brightness-110 transition-all">
+                        Explore Inventory
+                    </a>
+                </div>
+            `;
+        }
+
+        function escapeHTML(str) {
+            if (typeof str !== 'string') return str;
+            return str.replace(/[&<>'"]/g,
+                tag => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    "'": '&#39;',
+                    '"': '&quot;'
+                }[tag])
+            );
+        }
+
+        function renderGrid(vehicles) {
+            grid.innerHTML = vehicles.map(v => {
+                const eId = escapeHTML(v.id);
+                const eName = escapeHTML(v.name);
+                const eImg = escapeHTML(v.image_url);
+                const eVersion = escapeHTML(v.version || 'Base');
+                const ePrice = v.price_usd ? '$' + v.price_usd.toLocaleString() : 'Request';
+
+                return `
+                <div class="group relative" id="fav-card-${eId}">
+                    <div class="relative overflow-hidden aspect-[16/10] bg-surface-container-low mb-8 cursor-pointer" onclick="window.location.href='details.html?id=${eId}'">
+                        <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="${eImg}" alt="${eName}"/>
+                        <div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-60"></div>
+                    </div>
+
+                    <button class="absolute top-4 right-4 z-10 bg-black/50 backdrop-blur p-2 rounded-full text-red-500 hover:text-white transition-colors" onclick="removeFav('${eId}')">
+                        <span class="material-symbols-outlined">favorite</span>
+                    </button>
+
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="text-3xl font-bold tracking-tight uppercase text-white">${eName}</h3>
+                            <p class="text-outline-variant text-sm uppercase tracking-widest mt-1">${eVersion}</p>
+                        </div>
+                        <span class="text-2xl font-black text-primary">${escapeHTML(ePrice)}</span>
+                    </div>
+                </div>
+            `}).join('');
+        }
+
+        window.removeFav = function(id) {
+            let favs = JSON.parse(localStorage.getItem('favorites') || '[]');
+            favs = favs.filter(f => f !== id);
+            localStorage.setItem('favorites', JSON.stringify(favs));
+
+            // Re-render
+            const card = document.getElementById(`fav-card-${id}`);
+            if (card) {
+                card.remove();
+                if (favs.length === 0) renderEmptyState();
+            }
+        };
+
+        init();
+    </script>
+
+    <!-- Floating FAB -->
+    <button id="fab-btn" class="fixed bottom-8 right-8 w-14 h-14 bg-primary text-background rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform z-50">
+        <span class="material-symbols-outlined">chat</span>
+    </button>
+
+    <!-- FAB Popup -->
+    <div id="fab-popup" class="fixed bottom-24 right-8 bg-surface-container-low border border-outline-variant p-4 rounded shadow-2xl hidden z-50 flex-col gap-4">
+        <a href="https://wa.me/123456789" target="_blank" class="flex items-center gap-3 text-white hover:text-primary transition-colors">
+            <span class="material-symbols-outlined">chat_bubble</span> WhatsApp
+        </a>
+        <a href="tel:+123456789" class="flex items-center gap-3 text-white hover:text-primary transition-colors">
+            <span class="material-symbols-outlined">call</span> Direct Call
+        </a>
+    </div>
+
+<script>
+
+        // Mobile Menu
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const drawer = document.getElementById('mobile-drawer');
+        if (menuBtn && drawer) {
+            menuBtn.addEventListener('click', () => {
+                drawer.classList.toggle('translate-x-full');
+                menuBtn.innerHTML = drawer.classList.contains('translate-x-full')
+                    ? '<span class="material-symbols-outlined">menu</span>'
+                    : '<span class="material-symbols-outlined">close</span>';
+            });
+        }
+
+        // FAB
+        const fabBtn = document.getElementById('fab-btn');
+        const fabPopup = document.getElementById('fab-popup');
+        if (fabBtn && fabPopup) {
+            fabBtn.addEventListener('click', () => {
+                fabPopup.classList.toggle('hidden');
+                fabPopup.classList.toggle('flex');
+            });
+        }
+
+        // ==== Global Logic ====
+        let currentLang = localStorage.getItem('lang') || 'en';
+        let currentCurrency = localStorage.getItem('currency') || 'USD';
+        let exchangeRate = 1;
+        let translations = {};
+
+        async function initGlobal() {
+            try {
+                // Fetch translations directly
+                const transRes = await fetch('translations.json').then(r => r.json());
+                translations = transRes;
+                applyLanguage();
+                if (typeof updateCurrencyDisplay === 'function') {
+                    updateCurrencyDisplay();
+                } else {
+                    const cToggle = document.getElementById('currency-toggle');
+                    if (cToggle) cToggle.textContent = currentCurrency;
+                }
+            } catch (err) {
+                console.error("Global init error:", err);
+            }
+        }
+
+        function applyLanguage() {
+            document.documentElement.lang = currentLang;
+            document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[currentLang] && translations[currentLang][key]) {
+                    el.textContent = translations[currentLang][key];
+                }
+            });
+            const lt = document.getElementById('lang-toggle');
+            if(lt) lt.textContent = currentLang === 'en' ? 'AR' : 'EN';
+            const mlt = document.getElementById('mobile-lang-toggle');
+            if(mlt) mlt.textContent = currentLang === 'en' ? 'Switch to AR' : 'Switch to EN';
+        }
+
+        const langToggleBtn = document.getElementById('lang-toggle');
+        if(langToggleBtn) {
+            langToggleBtn.addEventListener('click', () => {
+                currentLang = currentLang === 'en' ? 'ar' : 'en';
+                localStorage.setItem('lang', currentLang);
+                applyLanguage();
+            });
+        }
+
+        const mlangToggleBtn = document.getElementById('mobile-lang-toggle');
+        if(mlangToggleBtn) {
+            mlangToggleBtn.addEventListener('click', () => {
+                currentLang = currentLang === 'en' ? 'ar' : 'en';
+                localStorage.setItem('lang', currentLang);
+                applyLanguage();
+            });
+        }
+
+        const currToggleBtn = document.getElementById('currency-toggle');
+        if(currToggleBtn) {
+            currToggleBtn.addEventListener('click', () => {
+                currentCurrency = currentCurrency === 'USD' ? 'EGP' : 'USD';
+                localStorage.setItem('currency', currentCurrency);
+                currToggleBtn.textContent = currentCurrency;
+                if (typeof updateCurrencyDisplay === 'function') updateCurrencyDisplay();
+            });
+        }
+
+        const mcurrToggleBtn = document.getElementById('mobile-currency-toggle');
+        if(mcurrToggleBtn) {
+            mcurrToggleBtn.addEventListener('click', () => {
+                currentCurrency = currentCurrency === 'USD' ? 'EGP' : 'USD';
+                localStorage.setItem('currency', currentCurrency);
+                if (typeof updateCurrencyDisplay === 'function') updateCurrencyDisplay();
+            });
+        }
+
+        initGlobal();
+
+</script>
+</body>
+</html>

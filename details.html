@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Motor Hub - Vehicle Details</title>
+    <!-- SEO Meta Tags -->
+    <meta property="og:title" content="Motor Hub - Exclusive Vehicle" />
+    <meta property="og:description" content="View the details of this exclusive vehicle at Motor Hub." />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Metropolis:wght@400;500;700&family=Domine:wght@400;500;700&family=Lexend:wght@400;500;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms">
+        </script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#f2ca50",
+                        background: "#131313",
+                        surface: "#131313",
+                        "on-surface": "#e5e2e1",
+                        "surface-container-low": "#1c1b1b",
+                        "outline-variant": "#4d4635"
+                    }
+                }
+            }
+        };
+    </script>
+</head>
+<body class="bg-background text-on-surface min-h-screen flex flex-col">
+    <!-- TopNavBar -->
+    <nav class="fixed top-0 w-full z-50 bg-neutral-900/80 backdrop-blur-xl flex justify-between items-center px-6 md:px-12 py-6 shadow-2xl shadow-yellow-500/10">
+        <div class="text-2xl font-black tracking-tighter text-primary">MOTOR HUB</div>
+
+        <!-- Desktop Nav -->
+        <div class="hidden md:flex gap-12 items-center">
+            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors" href="inventory.html" data-i18n="nav_inventory">Inventory</a>
+            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors" href="about.html" data-i18n="nav_financing">Financing</a>
+            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors" href="contact.html" data-i18n="nav_contact">Contact</a>
+
+            <!-- Toggles -->
+            <button id="lang-toggle" class="text-xs uppercase tracking-widest text-primary border border-primary/30 px-3 py-1 hover:bg-white/5">AR</button>
+            <button id="currency-toggle" class="text-xs uppercase tracking-widest text-primary border border-primary/30 px-3 py-1 hover:bg-white/5" data-currency="USD">USD</button>
+        </div>
+
+        <button class="hidden md:block font-manrope tracking-tight font-bold uppercase text-primary border border-primary/30 px-6 py-2 hover:bg-white/5 transition-all scale-95 duration-300" data-i18n="btn_book_concierge">
+            Book Concierge
+        </button>
+
+        <!-- Mobile Menu Button -->
+        <button id="mobile-menu-btn" class="md:hidden text-primary">
+            <span class="material-symbols-outlined">menu</span>
+        </button>
+    </nav>
+
+    <!-- Mobile Drawer (Hidden by default) -->
+    <div id="mobile-drawer" class="fixed inset-0 bg-neutral-900/95 backdrop-blur-3xl z-40 translate-x-full transition-transform duration-300 flex flex-col pt-32 px-6 pb-12">
+        <a class="text-2xl font-bold uppercase text-white mb-6" href="inventory.html" data-i18n="nav_inventory">Inventory</a>
+        <a class="text-2xl font-bold uppercase text-white mb-6" href="about.html" data-i18n="nav_financing">Financing</a>
+        <a class="text-2xl font-bold uppercase text-white mb-12" href="contact.html" data-i18n="nav_contact">Contact</a>
+        <button id="mobile-lang-toggle" class="text-lg uppercase text-primary mb-4 text-left">Switch to AR</button>
+        <button id="mobile-currency-toggle" class="text-lg uppercase text-primary text-left">Switch Currency</button>
+    </div>
+
+    <main class="pt-32 pb-24 px-6 md:px-12 max-w-[1600px] mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-16">
+
+        <!-- Left: Gallery -->
+        <div class="flex flex-col gap-4">
+            <div class="text-xs uppercase tracking-widest text-neutral-500 mb-4">
+                <a href="index.html" class="hover:text-primary">Home</a> &gt;
+                <a href="inventory.html" class="hover:text-primary">Inventory</a> &gt;
+                <span id="breadcrumb-name" class="text-primary">Vehicle</span>
+            </div>
+
+            <div class="relative aspect-[4/3] bg-surface-container-low overflow-hidden">
+                <img id="main-image" src="" alt="Vehicle Image" class="w-full h-full object-cover" />
+                <button id="fav-btn" class="absolute top-4 right-4 z-10 bg-black/50 backdrop-blur p-3 rounded-full text-white hover:text-red-500 transition-colors">
+                    <span class="material-symbols-outlined" id="fav-icon">favorite_border</span>
+                </button>
+            </div>
+            <div id="thumbnails" class="flex gap-4 overflow-x-auto pb-4">
+                <!-- Thumbnails injected via JS -->
+            </div>
+        </div>
+
+        <!-- Right: Details -->
+        <div class="flex flex-col gap-8">
+            <header>
+                <h1 id="vehicle-name" class="text-5xl md:text-6xl font-extrabold tracking-tighter uppercase mb-2 text-white">Loading...</h1>
+                <p id="vehicle-version" class="text-outline-variant uppercase tracking-widest">Version</p>
+                <div class="mt-6 flex items-end gap-4">
+                    <span id="vehicle-price" class="text-4xl font-black text-primary"></span>
+                    <span class="text-sm text-neutral-500 pb-1">USD</span>
+                </div>
+            </header>
+
+            <!-- Colors -->
+            <div id="color-swatches-container" class="hidden">
+                <span class="text-[10px] uppercase tracking-widest text-outline-variant font-bold block mb-3">Available Colors</span>
+                <div id="color-swatches" class="flex gap-3">
+                    <!-- Swatches injected via JS -->
+                </div>
+            </div>
+
+            <!-- Specs Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 border-y border-outline-variant/30 py-8">
+                <div>
+                    <span class="text-[10px] uppercase tracking-widest text-primary font-bold block mb-1">Mileage</span>
+                    <span id="spec-mileage" class="text-lg font-medium text-white"></span>
+                </div>
+                <div>
+                    <span class="text-[10px] uppercase tracking-widest text-primary font-bold block mb-1">Transmission</span>
+                    <span id="spec-transmission" class="text-lg font-medium text-white"></span>
+                </div>
+                <div>
+                    <span class="text-[10px] uppercase tracking-widest text-primary font-bold block mb-1">Fuel Type</span>
+                    <span id="spec-fuel" class="text-lg font-medium text-white"></span>
+                </div>
+                <div>
+                    <span class="text-[10px] uppercase tracking-widest text-primary font-bold block mb-1">Year</span>
+                    <span id="spec-year" class="text-lg font-medium text-white"></span>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div>
+                <span class="text-[10px] uppercase tracking-widest text-outline-variant font-bold block mb-3">Overview</span>
+                <p id="vehicle-description" class="text-neutral-400 leading-relaxed line-clamp-3 transition-all"></p>
+                <button id="read-more-btn" class="text-primary text-xs uppercase font-bold tracking-widest mt-2 hover:text-white">Read More</button>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex flex-col sm:flex-row gap-4 mt-4">
+                <button id="inquire-btn" class="bg-primary text-black font-bold uppercase tracking-widest py-4 px-8 hover:brightness-110 flex-1">
+                    Inquire Now
+                </button>
+                <a href="tel:+123456789" class="border border-outline-variant text-white font-bold uppercase tracking-widest py-4 px-8 hover:bg-white/5 text-center flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-sm">call</span> Call
+                </a>
+                <a href="https://wa.me/123456789" target="_blank" class="border border-outline-variant text-white font-bold uppercase tracking-widest py-4 px-8 hover:bg-white/5 text-center flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-sm">chat</span> WhatsApp
+                </a>
+            </div>
+
+            <a id="diagnostics-link" href="#" target="_blank" class="hidden text-xs text-primary underline uppercase tracking-widest mt-2">View Diagnostics Report</a>
+        </div>
+    </main>
+
+    <!-- Inquiry Modal -->
+    <div id="inquiry-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="bg-surface-container-low border border-outline-variant p-8 max-w-lg w-full relative">
+            <button id="close-modal" class="absolute top-4 right-4 text-neutral-500 hover:text-white">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            <h2 class="text-2xl font-bold uppercase mb-6 text-white">Vehicle Inquiry</h2>
+            <form id="inquiry-form" class="space-y-6">
+                <input type="hidden" id="inquiry-vehicle" />
+                <div>
+                    <label class="block uppercase tracking-widest text-[10px] text-neutral-400 mb-2">Full Name</label>
+                    <input id="inq-name" required class="w-full bg-transparent border-0 border-b border-outline-variant focus:border-primary text-white py-2 px-0" type="text"/>
+                </div>
+                <div>
+                    <label class="block uppercase tracking-widest text-[10px] text-neutral-400 mb-2">Email</label>
+                    <input id="inq-email" required class="w-full bg-transparent border-0 border-b border-outline-variant focus:border-primary text-white py-2 px-0" type="email"/>
+                </div>
+                <div>
+                    <label class="block uppercase tracking-widest text-[10px] text-neutral-400 mb-2">Phone</label>
+                    <input id="inq-phone" required class="w-full bg-transparent border-0 border-b border-outline-variant focus:border-primary text-white py-2 px-0" type="tel"/>
+                </div>
+                <div>
+                    <div class="flex justify-between">
+                        <label class="block uppercase tracking-widest text-[10px] text-neutral-400 mb-2">Message</label>
+                        <span id="char-count" class="text-[10px] text-neutral-500">0/500</span>
+                    </div>
+                    <textarea id="inq-message" required maxlength="500" class="w-full bg-transparent border-0 border-b border-outline-variant focus:border-primary text-white py-2 px-0 resize-none" rows="3"></textarea>
+                </div>
+                <button type="submit" class="w-full bg-primary text-black font-bold uppercase tracking-widest py-4 hover:brightness-110">
+                    Send Inquiry
+                </button>
+                <p id="modal-toast" class="text-green-500 text-sm hidden">Inquiry submitted.</p>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { supabase } from './products.js';
+        import { createMessage } from './messages.js';
+
+        let currentVehicle = null;
+        let isDescExpanded = false;
+
+        async function init() {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+
+            if (!id) {
+                document.getElementById('vehicle-name').textContent = "Vehicle Not Found";
+                return;
+            }
+
+            try {
+                // Fetch vehicle specific details. Using supabase client directly for ease of MVP.
+                const { data, error } = await supabase.from('products').select('*').eq('id', id).single();
+                if (error) throw error;
+                currentVehicle = data;
+
+                renderDetails();
+                checkFavoriteStatus();
+
+            } catch (err) {
+                console.error(err);
+                document.getElementById('vehicle-name').textContent = "Vehicle Not Found";
+            }
+        }
+
+        function escapeHTML(str) {
+            if (typeof str !== 'string') return str;
+            return str.replace(/[&<>'"]/g,
+                tag => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    "'": '&#39;',
+                    '"': '&quot;'
+                }[tag])
+            );
+        }
+
+        function renderDetails() {
+            const v = currentVehicle;
+
+            document.getElementById('breadcrumb-name').textContent = v.name;
+            document.getElementById('vehicle-name').textContent = v.name;
+            document.getElementById('vehicle-version').textContent = v.version || '';
+            document.getElementById('vehicle-price').textContent = v.price_usd ? '$' + v.price_usd.toLocaleString() : 'Upon Request';
+
+            document.getElementById('spec-mileage').textContent = v.mileage ? v.mileage + ' KM' : 'New';
+            document.getElementById('spec-transmission').textContent = v.transmission || 'Auto';
+            document.getElementById('spec-fuel').textContent = v.fuel_type || 'Gasoline';
+            document.getElementById('spec-year').textContent = v.year || '2024';
+
+            const descEl = document.getElementById('vehicle-description');
+            descEl.textContent = v.description || 'No description available.';
+
+            document.getElementById('main-image').src = v.image_url;
+
+            // Gallery Thumbnails
+            if (v.gallery && v.gallery.length > 0) {
+                const thumbsContainer = document.getElementById('thumbnails');
+                thumbsContainer.innerHTML = [v.image_url, ...v.gallery].map(img => `
+                    <div class="w-24 h-16 flex-shrink-0 cursor-pointer border border-transparent hover:border-primary transition-colors" onclick="document.getElementById('main-image').src='${escapeHTML(img)}'">
+                        <img src="${escapeHTML(img)}" class="w-full h-full object-cover" />
+                    </div>
+                `).join('');
+            }
+
+            // Colors
+            if (v.colors && v.colors.length > 0) {
+                document.getElementById('color-swatches-container').classList.remove('hidden');
+                document.getElementById('color-swatches').innerHTML = v.colors.map(c => `
+                    <button class="w-6 h-6 rounded-full border border-white/20 hover:scale-110 transition-transform" style="background-color: ${escapeHTML(c.hex)}" title="${escapeHTML(c.name)}"></button>
+                `).join('');
+            }
+
+            // Diagnostics
+            if (v.diagnostics_url) {
+                const diagLink = document.getElementById('diagnostics-link');
+                diagLink.href = v.diagnostics_url;
+                diagLink.classList.remove('hidden');
+            }
+
+            // Meta updates for SEO
+            document.title = `Motor Hub - ${v.name}`;
+        }
+
+        // Description Toggle
+        document.getElementById('read-more-btn').addEventListener('click', (e) => {
+            const desc = document.getElementById('vehicle-description');
+            isDescExpanded = !isDescExpanded;
+            if (isDescExpanded) {
+                desc.classList.remove('line-clamp-3');
+                e.target.textContent = 'Read Less';
+            } else {
+                desc.classList.add('line-clamp-3');
+                e.target.textContent = 'Read More';
+            }
+        });
+
+        // Favorites
+        function checkFavoriteStatus() {
+            if (!currentVehicle) return;
+            const favs = JSON.parse(localStorage.getItem('favorites') || '[]');
+            const icon = document.getElementById('fav-icon');
+            const btn = document.getElementById('fav-btn');
+
+            if (favs.includes(currentVehicle.id)) {
+                icon.textContent = 'favorite';
+                btn.classList.add('text-red-500');
+            } else {
+                icon.textContent = 'favorite_border';
+                btn.classList.remove('text-red-500');
+            }
+        }
+
+        document.getElementById('fav-btn').addEventListener('click', () => {
+            if (!currentVehicle) return;
+            const id = currentVehicle.id;
+            let favs = JSON.parse(localStorage.getItem('favorites') || '[]');
+
+            if (favs.includes(id)) {
+                favs = favs.filter(f => f !== id);
+            } else {
+                favs.push(id);
+            }
+            localStorage.setItem('favorites', JSON.stringify(favs));
+            checkFavoriteStatus();
+        });
+
+        // Modal Logic
+        const modal = document.getElementById('inquiry-modal');
+        document.getElementById('inquire-btn').addEventListener('click', () => {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.getElementById('inquiry-vehicle').value = currentVehicle ? currentVehicle.name : '';
+        });
+
+        document.getElementById('close-modal').addEventListener('click', () => {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        });
+
+        // Char count
+        const msgTextarea = document.getElementById('inq-message');
+        const charCount = document.getElementById('char-count');
+        msgTextarea.addEventListener('input', (e) => {
+            charCount.textContent = `${e.target.value.length}/500`;
+        });
+
+        // Form Submit
+        document.getElementById('inquiry-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            const toast = document.getElementById('modal-toast');
+
+            btn.disabled = true;
+            btn.textContent = 'Sending...';
+
+            try {
+                await createMessage({
+                    name: document.getElementById('inq-name').value,
+                    email: document.getElementById('inq-email').value,
+                    phone: document.getElementById('inq-phone').value,
+                    subject: `Inquiry about ${document.getElementById('inquiry-vehicle').value}`,
+                    message: document.getElementById('inq-message').value
+                });
+
+                e.target.reset();
+                charCount.textContent = '0/500';
+                toast.classList.remove('hidden');
+                setTimeout(() => {
+                    toast.classList.add('hidden');
+                    document.getElementById('close-modal').click();
+                }, 2000);
+            } catch (err) {
+                alert('Error sending inquiry.');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Send Inquiry';
+            }
+        });
+
+        init();
+    </script>
+
+    <!-- Floating FAB -->
+    <button id="fab-btn" class="fixed bottom-8 right-8 w-14 h-14 bg-primary text-background rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform z-50">
+        <span class="material-symbols-outlined">chat</span>
+    </button>
+
+    <!-- FAB Popup -->
+    <div id="fab-popup" class="fixed bottom-24 right-8 bg-surface-container-low border border-outline-variant p-4 rounded shadow-2xl hidden z-50 flex-col gap-4">
+        <a href="https://wa.me/123456789" target="_blank" class="flex items-center gap-3 text-white hover:text-primary transition-colors">
+            <span class="material-symbols-outlined">chat_bubble</span> WhatsApp
+        </a>
+        <a href="tel:+123456789" class="flex items-center gap-3 text-white hover:text-primary transition-colors">
+            <span class="material-symbols-outlined">call</span> Direct Call
+        </a>
+    </div>
+
+<script>
+
+        // Mobile Menu
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const drawer = document.getElementById('mobile-drawer');
+        if (menuBtn && drawer) {
+            menuBtn.addEventListener('click', () => {
+                drawer.classList.toggle('translate-x-full');
+                menuBtn.innerHTML = drawer.classList.contains('translate-x-full')
+                    ? '<span class="material-symbols-outlined">menu</span>'
+                    : '<span class="material-symbols-outlined">close</span>';
+            });
+        }
+
+        // FAB
+        const fabBtn = document.getElementById('fab-btn');
+        const fabPopup = document.getElementById('fab-popup');
+        if (fabBtn && fabPopup) {
+            fabBtn.addEventListener('click', () => {
+                fabPopup.classList.toggle('hidden');
+                fabPopup.classList.toggle('flex');
+            });
+        }
+
+        // ==== Global Logic ====
+        let currentLang = localStorage.getItem('lang') || 'en';
+        let currentCurrency = localStorage.getItem('currency') || 'USD';
+        let exchangeRate = 1;
+        let translations = {};
+
+        async function initGlobal() {
+            try {
+                // Fetch translations directly
+                const transRes = await fetch('translations.json').then(r => r.json());
+                translations = transRes;
+                applyLanguage();
+                if (typeof updateCurrencyDisplay === 'function') {
+                    updateCurrencyDisplay();
+                } else {
+                    const cToggle = document.getElementById('currency-toggle');
+                    if (cToggle) cToggle.textContent = currentCurrency;
+                }
+            } catch (err) {
+                console.error("Global init error:", err);
+            }
+        }
+
+        function applyLanguage() {
+            document.documentElement.lang = currentLang;
+            document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[currentLang] && translations[currentLang][key]) {
+                    el.textContent = translations[currentLang][key];
+                }
+            });
+            const lt = document.getElementById('lang-toggle');
+            if(lt) lt.textContent = currentLang === 'en' ? 'AR' : 'EN';
+            const mlt = document.getElementById('mobile-lang-toggle');
+            if(mlt) mlt.textContent = currentLang === 'en' ? 'Switch to AR' : 'Switch to EN';
+        }
+
+        const langToggleBtn = document.getElementById('lang-toggle');
+        if(langToggleBtn) {
+            langToggleBtn.addEventListener('click', () => {
+                currentLang = currentLang === 'en' ? 'ar' : 'en';
+                localStorage.setItem('lang', currentLang);
+                applyLanguage();
+            });
+        }
+
+        const mlangToggleBtn = document.getElementById('mobile-lang-toggle');
+        if(mlangToggleBtn) {
+            mlangToggleBtn.addEventListener('click', () => {
+                currentLang = currentLang === 'en' ? 'ar' : 'en';
+                localStorage.setItem('lang', currentLang);
+                applyLanguage();
+            });
+        }
+
+        const currToggleBtn = document.getElementById('currency-toggle');
+        if(currToggleBtn) {
+            currToggleBtn.addEventListener('click', () => {
+                currentCurrency = currentCurrency === 'USD' ? 'EGP' : 'USD';
+                localStorage.setItem('currency', currentCurrency);
+                currToggleBtn.textContent = currentCurrency;
+                if (typeof updateCurrencyDisplay === 'function') updateCurrencyDisplay();
+            });
+        }
+
+        const mcurrToggleBtn = document.getElementById('mobile-currency-toggle');
+        if(mcurrToggleBtn) {
+            mcurrToggleBtn.addEventListener('click', () => {
+                currentCurrency = currentCurrency === 'USD' ? 'EGP' : 'USD';
+                localStorage.setItem('currency', currentCurrency);
+                if (typeof updateCurrencyDisplay === 'function') updateCurrencyDisplay();
+            });
+        }
+
+        initGlobal();
+
+</script>
+</body>
+</html>
