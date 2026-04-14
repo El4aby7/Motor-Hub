@@ -1,0 +1,34 @@
+{
+  "en": {
+    "nav_inventory": "Inventory",
+    "nav_financing": "Financing",
+    "nav_contact": "Contact",
+    "btn_book_concierge": "Book Concierge",
+    "home_title": "CONNECT WITH ELITE",
+    "currency_usd": "USD",
+    "currency_egp": "EGP",
+    "footer_explore": "Explore",
+    "footer_support": "Support",
+    "footer_connect": "Connect",
+    "inquiry_type": "Inquiry Type",
+    "full_name": "Full Name",
+    "email": "Email Address",
+    "message": "Message"
+  },
+  "ar": {
+    "nav_inventory": "المخزون",
+    "nav_financing": "التمويل",
+    "nav_contact": "اتصل بنا",
+    "btn_book_concierge": "حجز خدمة الكونسيرج",
+    "home_title": "تواصل مع النخبة",
+    "currency_usd": "دولار",
+    "currency_egp": "جنيه",
+    "footer_explore": "استكشف",
+    "footer_support": "الدعم",
+    "footer_connect": "تواصل",
+    "inquiry_type": "نوع الاستفسار",
+    "full_name": "الاسم الكامل",
+    "email": "البريد الإلكتروني",
+    "message": "الرسالة"
+  }
+}

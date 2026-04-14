@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Motor Hub - Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Metropolis:wght@400;500;700&family=Domine:wght@400;500;700&family=Lexend:wght@400;500;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#f2ca50",
+                        background: "#131313",
+                        surface: "#131313",
+                        "on-surface": "#e5e2e1",
+                        "surface-container-low": "#1c1b1b",
+                        "outline-variant": "#4d4635"
+                    }
+                }
+            }
+        };
+    </script>
+</head>
+<body class="bg-background text-on-surface min-h-screen flex flex-col">
+
+    <!-- Login Prompt (Visible when not authenticated) -->
+    <div id="login-view" class="flex-grow flex items-center justify-center p-6">
+        <div class="bg-surface-container-low border border-outline-variant p-8 max-w-md w-full shadow-2xl">
+            <h2 class="text-2xl font-bold uppercase mb-6 text-primary text-center">Admin Portal</h2>
+            <form id="login-form" class="space-y-6">
+                <div>
+                    <label class="block uppercase tracking-widest text-[10px] text-neutral-400 mb-2">Email</label>
+                    <input id="login-email" required class="w-full bg-transparent border-0 border-b border-outline-variant focus:border-primary text-white py-2 px-0" type="email"/>
+                </div>
+                <div>
+                    <label class="block uppercase tracking-widest text-[10px] text-neutral-400 mb-2">Password</label>
+                    <input id="login-password" required class="w-full bg-transparent border-0 border-b border-outline-variant focus:border-primary text-white py-2 px-0" type="password"/>
+                </div>
+                <button type="submit" class="w-full bg-primary text-black font-bold uppercase tracking-widest py-3 hover:brightness-110">
+                    Authenticate
+                </button>
+                <p id="login-error" class="text-red-500 text-xs text-center hidden">Invalid credentials</p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Generic Modal for Forms -->
+    <div id="crud-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="bg-surface-container-low border border-outline-variant p-8 max-w-lg w-full relative">
+            <button id="close-crud-modal" class="absolute top-4 right-4 text-neutral-500 hover:text-white">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            <h2 id="modal-title" class="text-2xl font-bold uppercase mb-6 text-white">Form</h2>
+            <form id="crud-form" class="space-y-4">
+                <div id="crud-form-fields" class="space-y-4"></div>
+                <input type="hidden" id="crud-id" />
+                <input type="hidden" id="crud-type" />
+                <button type="submit" class="w-full bg-primary text-black font-bold uppercase tracking-widest py-3 mt-4 hover:brightness-110">Save</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard (Hidden by default) -->
+    <div id="dashboard-view" class="hidden flex-grow flex flex-col md:flex-row h-screen overflow-hidden">
+
+        <!-- Sidebar -->
+        <aside class="w-full md:w-64 bg-surface-container-low border-r border-outline-variant flex flex-col">
+            <div class="p-6 border-b border-outline-variant flex justify-between items-center">
+                <span class="font-black text-primary text-xl tracking-tighter">MOTOR HUB</span>
+                <button id="logout-btn" class="text-xs text-neutral-500 hover:text-white uppercase tracking-widest">Logout</button>
+            </div>
+            <nav class="flex-grow flex flex-col p-4 gap-2">
+                <button class="nav-tab text-left px-4 py-3 rounded uppercase text-xs tracking-widest text-primary font-bold bg-white/5" data-target="tab-products">Products</button>
+                <button class="nav-tab text-left px-4 py-3 rounded uppercase text-xs tracking-widest text-neutral-400 font-bold hover:bg-white/5 hover:text-white transition-colors" data-target="tab-brands">Brands</button>
+                <button class="nav-tab text-left px-4 py-3 rounded uppercase text-xs tracking-widest text-neutral-400 font-bold hover:bg-white/5 hover:text-white transition-colors" data-target="tab-categories">Categories</button>
+                <button class="nav-tab text-left px-4 py-3 rounded uppercase text-xs tracking-widest text-neutral-400 font-bold hover:bg-white/5 hover:text-white transition-colors" data-target="tab-inquiries">Inquiries</button>
+                <button class="nav-tab text-left px-4 py-3 rounded uppercase text-xs tracking-widest text-neutral-400 font-bold hover:bg-white/5 hover:text-white transition-colors" data-target="tab-settings">Settings</button>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-grow overflow-auto p-8 relative">
+
+            <!-- TAB: PRODUCTS -->
+            <section id="tab-products" class="tab-content block">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold uppercase tracking-tight text-white">Products Management</h2>
+                    <button id="btn-add-product" class="bg-primary text-black px-4 py-2 text-xs font-bold uppercase tracking-widest hover:brightness-110">Add Vehicle</button>
+                </div>
+                <div class="overflow-x-auto border border-outline-variant bg-surface-container-low">
+                    <table class="w-full text-left text-sm">
+                        <thead class="border-b border-outline-variant uppercase text-[10px] tracking-widest text-neutral-400">
+                            <tr>
+                                <th class="p-4 w-10"></th>
+                                <th class="p-4">Name</th>
+                                <th class="p-4">Price (USD)</th>
+                                <th class="p-4">Status</th>
+                                <th class="p-4">Spotlight</th>
+                                <th class="p-4">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="products-tbody" class="divide-y divide-outline-variant/30 text-white">
+                            <tr><td colspan="5" class="p-4 text-center text-neutral-500">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- TAB: BRANDS -->
+            <section id="tab-brands" class="tab-content hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold uppercase tracking-tight text-white">Brands</h2>
+                    <button id="btn-add-brand" class="bg-primary text-black px-4 py-2 text-xs font-bold uppercase tracking-widest hover:brightness-110">Add Brand</button>
+                </div>
+                <div class="overflow-x-auto border border-outline-variant bg-surface-container-low">
+                    <table class="w-full text-left text-sm">
+                        <thead class="border-b border-outline-variant uppercase text-[10px] tracking-widest text-neutral-400">
+                            <tr><th class="p-4">Name</th><th class="p-4 text-right">Actions</th></tr>
+                        </thead>
+                        <tbody id="brands-tbody" class="divide-y divide-outline-variant/30 text-white">
+                            <tr><td colspan="2" class="p-4 text-center text-neutral-500">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- TAB: CATEGORIES -->
+            <section id="tab-categories" class="tab-content hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold uppercase tracking-tight text-white">Categories</h2>
+                    <button id="btn-add-category" class="bg-primary text-black px-4 py-2 text-xs font-bold uppercase tracking-widest hover:brightness-110">Add Category</button>
+                </div>
+                <div class="overflow-x-auto border border-outline-variant bg-surface-container-low">
+                    <table class="w-full text-left text-sm">
+                        <thead class="border-b border-outline-variant uppercase text-[10px] tracking-widest text-neutral-400">
+                            <tr><th class="p-4">Name (EN)</th><th class="p-4">Name (AR)</th><th class="p-4 text-right">Actions</th></tr>
+                        </thead>
+                        <tbody id="categories-tbody" class="divide-y divide-outline-variant/30 text-white">
+                            <tr><td colspan="3" class="p-4 text-center text-neutral-500">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- TAB: INQUIRIES -->
+            <section id="tab-inquiries" class="tab-content hidden">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                    <h2 class="text-2xl font-bold uppercase tracking-tight text-white">Inquiries</h2>
+                    <div class="flex gap-4">
+                        <select id="inquiry-filter" class="bg-surface-container-low border border-outline-variant text-on-surface text-xs uppercase tracking-widest px-4 py-2 focus:ring-1 focus:ring-primary appearance-none" onchange="renderInquiriesTable()">
+                            <option value="all">All Inquiries</option>
+                            <option value="unread">Unread</option>
+                            <option value="read">Read</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="overflow-x-auto border border-outline-variant bg-surface-container-low">
+                    <table class="w-full text-left text-sm">
+                        <thead class="border-b border-outline-variant uppercase text-[10px] tracking-widest text-neutral-400">
+                            <tr><th class="p-4">Date</th><th class="p-4">Name</th><th class="p-4">Subject</th><th class="p-4">Status</th><th class="p-4 text-right">Actions</th></tr>
+                        </thead>
+                        <tbody id="inquiries-tbody" class="divide-y divide-outline-variant/30 text-white">
+                            <tr><td colspan="5" class="p-4 text-center text-neutral-500">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- TAB: SETTINGS -->
+            <section id="tab-settings" class="tab-content hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold uppercase tracking-tight text-white">Global Settings</h2>
+                </div>
+                <form id="settings-form" class="space-y-6 max-w-xl bg-surface-container-low p-8 border border-outline-variant">
+                    <div>
+                        <label class="block uppercase tracking-widest text-[10px] text-neutral-400 mb-2">Exchange Rate (USD to EGP)</label>
+                        <input id="set-rate" type="number" step="0.01" class="w-full bg-transparent border-0 border-b border-outline-variant focus:border-primary text-white py-2 px-0" placeholder="e.g. 50"/>
+                    </div>
+                    <div>
+                        <label class="block uppercase tracking-widest text-[10px] text-neutral-400 mb-2">Hero Background Image URL</label>
+                        <input id="set-hero" type="url" class="w-full bg-transparent border-0 border-b border-outline-variant focus:border-primary text-white py-2 px-0" placeholder="https://..."/>
+                    </div>
+                    <div>
+                        <label class="block uppercase tracking-widest text-[10px] text-neutral-400 mb-2">Google Map Embed Link</label>
+                        <input id="set-map" type="url" class="w-full bg-transparent border-0 border-b border-outline-variant focus:border-primary text-white py-2 px-0" placeholder="https://www.google.com/maps/embed?..."/>
+                    </div>
+                    <button type="submit" class="w-full bg-primary text-black font-bold uppercase tracking-widest py-3 px-6 hover:brightness-110 mt-4">Save Settings</button>
+                    <p id="settings-toast" class="text-green-500 text-sm hidden text-center pt-2">Settings updated successfully.</p>
+                </form>
+            </section>
+
+        </main>
+    </div>
+
+    <script type="module">
+        import { supabase, getVehicles, createVehicle, updateVehicle, deleteVehicle } from './products.js';
+        import { getBrands, createBrand, updateBrand, deleteBrand } from './brands.js';
+        import { getCategories, createCategory, updateCategory, deleteCategory } from './categories.js';
+        import { getMessages, markMessageRead } from './messages.js';
+        import { getSettings, updateSettings, subscribeToSettings } from './settings.js';
+
+        const loginView = document.getElementById('login-view');
+        const dashboardView = document.getElementById('dashboard-view');
+
+        // Modal State
+        const crudModal = document.getElementById('crud-modal');
+        const crudFormFields = document.getElementById('crud-form-fields');
+        const modalTitle = document.getElementById('modal-title');
+        const crudId = document.getElementById('crud-id');
+        const crudType = document.getElementById('crud-type');
+
+        // ==== AUTH LOGIC ====
+        async function checkAuth() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+                loginView.classList.add('hidden');
+                dashboardView.classList.remove('hidden');
+                dashboardView.classList.add('flex');
+            }
+        }
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const errorEl = document.getElementById('login-error');
+
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+            if (error) {
+                errorEl.classList.remove('hidden');
+            } else {
+                errorEl.classList.add('hidden');
+                checkAuth();
+                renderProductsTable(); // Initial load
+            }
+        });
+
+        document.getElementById('logout-btn').addEventListener('click', async () => {
+            await supabase.auth.signOut();
+            loginView.classList.remove('hidden');
+            dashboardView.classList.add('hidden');
+            dashboardView.classList.remove('flex');
+        });
+
+        // ==== CRUD MODAL LOGIC ====
+
+        window.openModal = function(type, id = null, dataStr = null) {
+            crudType.value = type;
+            crudId.value = id || '';
+            let data = dataStr ? JSON.parse(decodeURIComponent(dataStr)) : {};
+
+            if (type === 'product') {
+                modalTitle.textContent = id ? 'Edit Vehicle' : 'Add Vehicle';
+                crudFormFields.innerHTML = `
+                    <div><label class="block text-[10px] uppercase text-neutral-400">Name</label><input id="f-name" required value="${escapeHTML(data.name || '')}" class="w-full bg-transparent border-0 border-b border-outline-variant focus:border-primary text-white py-2 px-0" /></div>
+                    <div><label class="block text-[10px] uppercase text-neutral-400">Price USD</label><input id="f-price" type="number" value="${data.price_usd || ''}" class="w-full bg-transparent border-0 border-b border-outline-variant focus:border-primary text-white py-2 px-0" /></div>
+                    <div><label class="block text-[10px] uppercase text-neutral-400">Main Image URL</label><input id="f-main-image" value="${escapeHTML(data.main_image_url || '')}" class="w-full bg-transparent border-0 border-b border-outline-variant focus:border-primary text-white py-2 px-0" placeholder="https://..." /></div>
+                    <div><label class="block text-[10px] uppercase text-neutral-400">Gallery URLs (comma-separated)</label><input id="f-gallery" value="${escapeHTML((data.gallery_urls || []).join(', '))}" class="w-full bg-transparent border-0 border-b border-outline-variant focus:border-primary text-white py-2 px-0" placeholder="https://..., https://..." /></div>
+                    <div><label class="block text-[10px] uppercase text-neutral-400">Available Colors (comma-separated, hex or names)</label><input id="f-colors" value="${escapeHTML(data.colors ? (typeof data.colors === 'string' ? JSON.parse(data.colors) : data.colors).join(', ') : '')}" class="w-full bg-transparent border-0 border-b border-outline-variant focus:border-primary text-white py-2 px-0" placeholder="Red, Blue, #FFFFFF" /></div>
+                    <div class="flex gap-4">
+                        <label class="flex items-center text-white text-sm"><input type="checkbox" id="f-sold" ${data.is_sold_out ? 'checked' : ''} class="mr-2 accent-primary"/> Sold Out</label>
+                        <label class="flex items-center text-white text-sm"><input type="checkbox" id="f-spot" ${data.is_spotlight ? 'checked' : ''} class="mr-2 accent-primary"/> Spotlight</label>
+                    </div>
+                `;
+            } else if (type === 'brand') {
+                modalTitle.textContent = id ? 'Edit Brand' : 'Add Brand';
+                crudFormFields.innerHTML = `
+                    <div><label class="block text-[10px] uppercase text-neutral-400">Name</label><input id="f-name" required value="${data.name || ''}" class="w-full bg-transparent border-0 border-b border-outline-variant focus:border-primary text-white py-2 px-0" /></div>
+                `;
+            } else if (type === 'category') {
+                modalTitle.textContent = id ? 'Edit Category' : 'Add Category';
+                crudFormFields.innerHTML = `
+                    <div><label class="block text-[10px] uppercase text-neutral-400">Name (EN)</label><input id="f-name-en" required value="${data.name_en || ''}" class="w-full bg-transparent border-0 border-b border-outline-variant focus:border-primary text-white py-2 px-0" /></div>
+                    <div><label class="block text-[10px] uppercase text-neutral-400">Name (AR)</label><input id="f-name-ar" required value="${data.name_ar || ''}" class="w-full bg-transparent border-0 border-b border-outline-variant focus:border-primary text-white py-2 px-0" /></div>
+                `;
+            }
+            crudModal.classList.remove('hidden');
+            crudModal.classList.add('flex');
+        }
+
+        window.deleteItem = async function(type, id) {
+            if(!confirm("Are you sure?")) return;
+            try {
+                if(type === 'product') { await deleteVehicle(id); renderProductsTable(); }
+                if(type === 'brand') { await deleteBrand(id); renderBrandsTable(); }
+                if(type === 'category') { await deleteCategory(id); renderCategoriesTable(); }
+            } catch(e) { alert("Delete failed."); }
+        }
+
+        document.getElementById('close-crud-modal').addEventListener('click', () => {
+            crudModal.classList.add('hidden');
+            crudModal.classList.remove('flex');
+        });
+
+        document.getElementById('crud-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const type = crudType.value;
+            const id = crudId.value;
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.textContent = "Saving...";
+            btn.disabled = true;
+
+            try {
+                if (type === 'product') {
+                    const galleryRaw = document.getElementById('f-gallery').value;
+                    const gallery_urls = galleryRaw ? galleryRaw.split(',').map(s => s.trim()).filter(s => s) : [];
+
+                    const colorsRaw = document.getElementById('f-colors').value;
+                    const colors = colorsRaw ? colorsRaw.split(',').map(s => s.trim()).filter(s => s) : [];
+
+                    const payload = {
+                        name: document.getElementById('f-name').value,
+                        price_usd: parseFloat(document.getElementById('f-price').value) || null,
+                        main_image_url: document.getElementById('f-main-image').value || null,
+                        gallery_urls: gallery_urls,
+                        colors: colors,
+                        is_sold_out: document.getElementById('f-sold').checked,
+                        is_spotlight: document.getElementById('f-spot').checked
+                    };
+                    id ? await updateVehicle(id, payload) : await createVehicle(payload);
+                    renderProductsTable();
+                } else if (type === 'brand') {
+                    const payload = { name: document.getElementById('f-name').value };
+                    id ? await updateBrand(id, payload) : await createBrand(payload);
+                    renderBrandsTable();
+                } else if (type === 'category') {
+                    const payload = {
+                        name_en: document.getElementById('f-name-en').value,
+                        name_ar: document.getElementById('f-name-ar').value
+                    };
+                    id ? await updateCategory(id, payload) : await createCategory(payload);
+                    renderCategoriesTable();
+                }
+                document.getElementById('close-crud-modal').click();
+            } catch(err) {
+                alert("Save failed.");
+            } finally {
+                btn.textContent = "Save";
+                btn.disabled = false;
+            }
+        });
+
+        // Event listeners for static add buttons
+        document.querySelectorAll('button[id^="btn-add-"]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const type = e.target.id.split('-')[2]; // btn-add-product -> product
+                window.openModal(type);
+            });
+        });
+
+        function escapeHTML(str) {
+            if (typeof str !== 'string') return str;
+            return str.replace(/[&<>'"]/g,
+                tag => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    "'": '&#39;',
+                    '"': '&quot;'
+                }[tag])
+            );
+        }
+
+        // ==== DATA RENDERING ====
+
+        async function renderProductsTable() {
+            const tbody = document.getElementById('products-tbody');
+            tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-neutral-500">Loading...</td></tr>';
+            try {
+                const vehicles = await getVehicles();
+                if (vehicles.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-neutral-500">No products found.</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = vehicles.map((v, index) => `
+                    <tr class="hover:bg-white/5 transition-colors draggable-row" draggable="true" data-id="${escapeHTML(v.id)}" data-index="${index}">
+                        <td class="p-4 text-neutral-500 cursor-move">
+                            <span class="material-symbols-outlined">drag_indicator</span>
+                        </td>
+                        <td class="p-4 font-bold text-white">${escapeHTML(v.name)}</td>
+                        <td class="p-4 text-primary">${escapeHTML(v.price_usd ? '$'+v.price_usd.toLocaleString() : 'N/A')}</td>
+                        <td class="p-4">${v.is_sold_out ? '<span class="text-red-500 text-xs tracking-widest uppercase">Sold Out</span>' : '<span class="text-green-500 text-xs tracking-widest uppercase">Available</span>'}</td>
+                        <td class="p-4">${v.is_spotlight ? 'Yes' : 'No'}</td>
+                        <td class="p-4 flex gap-4 text-xs font-bold uppercase tracking-widest justify-end">
+                            <button class="text-blue-400 hover:text-blue-300 edit-btn" data-type="product" data-id="${escapeHTML(v.id)}">Edit</button>
+                            <button class="text-red-400 hover:text-red-300" onclick="window.deleteItem('product', '${escapeHTML(v.id)}')">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+
+                // Attach edit handlers safely
+                tbody.querySelectorAll('.edit-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const id = e.target.getAttribute('data-id');
+                        const v = vehicles.find(veh => veh.id === id);
+                        window.openModal('product', id, encodeURIComponent(JSON.stringify(v)));
+                    });
+                });
+
+                // Attach drag-and-drop handlers
+                let draggedRow = null;
+
+                tbody.querySelectorAll('.draggable-row').forEach(row => {
+                    row.addEventListener('dragstart', function() {
+                        draggedRow = this;
+                        setTimeout(() => this.classList.add('opacity-50'), 0);
+                    });
+
+                    row.addEventListener('dragend', function() {
+                        setTimeout(() => this.classList.remove('opacity-50'), 0);
+                        draggedRow = null;
+
+                        // Save new order
+                        const newOrder = Array.from(tbody.querySelectorAll('.draggable-row')).map((r, i) => ({
+                            id: r.getAttribute('data-id'),
+                            inventory_order: i
+                        }));
+
+                        // Update order in background
+                        Promise.all(newOrder.map(item => updateVehicle(item.id, { inventory_order: item.inventory_order })))
+                            .catch(err => console.error("Error updating order:", err));
+                    });
+
+                    row.addEventListener('dragover', function(e) {
+                        e.preventDefault();
+                    });
+
+                    row.addEventListener('dragenter', function(e) {
+                        e.preventDefault();
+                        this.classList.add('bg-white/10');
+                    });
+
+                    row.addEventListener('dragleave', function() {
+                        this.classList.remove('bg-white/10');
+                    });
+
+                    row.addEventListener('drop', function() {
+                        this.classList.remove('bg-white/10');
+                        if (this !== draggedRow) {
+                            let allRows = Array.from(tbody.querySelectorAll('.draggable-row'));
+                            let draggedIndex = allRows.indexOf(draggedRow);
+                            let targetIndex = allRows.indexOf(this);
+
+                            if (draggedIndex < targetIndex) {
+                                this.after(draggedRow);
+                            } else {
+                                this.before(draggedRow);
+                            }
+                        }
+                    });
+                });
+            } catch(e) {
+                tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-red-500">Failed to load products.</td></tr>';
+            }
+        }
+
+        async function renderBrandsTable() {
+            const tbody = document.getElementById('brands-tbody');
+            tbody.innerHTML = '<tr><td colspan="2" class="p-4 text-center text-neutral-500">Loading...</td></tr>';
+            try {
+                const brands = await getBrands();
+                if (brands.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="2" class="p-4 text-center text-neutral-500">No brands found.</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = brands.map(b => `
+                    <tr class="hover:bg-white/5 transition-colors">
+                        <td class="p-4 font-bold">${escapeHTML(b.name)}</td>
+                        <td class="p-4 flex gap-4 text-xs font-bold uppercase tracking-widest justify-end">
+                            <button class="text-blue-400 hover:text-blue-300 edit-btn" data-type="brand" data-id="${escapeHTML(b.id)}">Edit</button>
+                            <button class="text-red-400 hover:text-red-300" onclick="window.deleteItem('brand', '${escapeHTML(b.id)}')">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+
+                tbody.querySelectorAll('.edit-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const id = e.target.getAttribute('data-id');
+                        const b = brands.find(br => br.id === id);
+                        window.openModal('brand', id, encodeURIComponent(JSON.stringify(b)));
+                    });
+                });
+            } catch(e) { tbody.innerHTML = '<tr><td colspan="2" class="p-4 text-red-500 text-center">Error loading</td></tr>'; }
+        }
+
+        async function renderCategoriesTable() {
+            const tbody = document.getElementById('categories-tbody');
+            tbody.innerHTML = '<tr><td colspan="3" class="p-4 text-center text-neutral-500">Loading...</td></tr>';
+            try {
+                const cats = await getCategories();
+                if (cats.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="3" class="p-4 text-center text-neutral-500">No categories found.</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = cats.map(c => `
+                    <tr class="hover:bg-white/5 transition-colors">
+                        <td class="p-4 font-bold">${escapeHTML(c.name_en)}</td>
+                        <td class="p-4 text-neutral-400">${escapeHTML(c.name_ar)}</td>
+                        <td class="p-4 flex gap-4 text-xs font-bold uppercase tracking-widest justify-end">
+                            <button class="text-blue-400 hover:text-blue-300 edit-btn" data-type="category" data-id="${escapeHTML(c.id)}">Edit</button>
+                            <button class="text-red-400 hover:text-red-300" onclick="window.deleteItem('category', '${escapeHTML(c.id)}')">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+
+                tbody.querySelectorAll('.edit-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const id = e.target.getAttribute('data-id');
+                        const c = cats.find(cat => cat.id === id);
+                        window.openModal('category', id, encodeURIComponent(JSON.stringify(c)));
+                    });
+                });
+            } catch(e) { tbody.innerHTML = '<tr><td colspan="3" class="p-4 text-red-500 text-center">Error loading</td></tr>'; }
+        }
+
+        async function renderInquiriesTable() {
+            const tbody = document.getElementById('inquiries-tbody');
+            const filterValue = document.getElementById('inquiry-filter') ? document.getElementById('inquiry-filter').value : 'all';
+            tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-neutral-500">Loading...</td></tr>';
+            try {
+                let msgs = await getMessages();
+
+                if (filterValue === 'unread') {
+                    msgs = msgs.filter(m => !m.is_read);
+                } else if (filterValue === 'read') {
+                    msgs = msgs.filter(m => m.is_read);
+                }
+
+                if (msgs.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-neutral-500">No inquiries found.</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = msgs.map(m => `
+                    <tr class="hover:bg-white/5 transition-colors">
+                        <td class="p-4 text-neutral-400">${escapeHTML(new Date(m.created_at).toLocaleDateString())}</td>
+                        <td class="p-4 font-bold">${escapeHTML(m.name)}</td>
+                        <td class="p-4 text-neutral-300 truncate max-w-[200px]">${escapeHTML(m.subject)}</td>
+                        <td class="p-4">${m.is_read ? '<span class="text-neutral-500 text-[10px] tracking-widest uppercase font-bold">Read</span>' : '<span class="text-primary text-[10px] tracking-widest uppercase font-bold">Unread</span>'}</td>
+                        <td class="p-4 text-right">
+                            ${!m.is_read ? `<button class="text-xs text-primary font-bold uppercase tracking-widest hover:text-white" onclick="window.markRead('${escapeHTML(m.id)}')">Mark Read</button>` : ''}
+                        </td>
+                    </tr>
+                `).join('');
+            } catch(e) { tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-red-500 text-center">Error loading</td></tr>'; }
+        }
+
+        // Global fn for inline click
+        window.markRead = async function(id) {
+            try {
+                await markMessageRead(id);
+                renderInquiriesTable();
+            } catch(e) {
+                console.error("Failed to mark as read");
+            }
+        }
+
+        async function renderSettingsForm() {
+            try {
+                const set = await getSettings();
+                document.getElementById('set-rate').value = set.usd_to_egp_rate || '';
+                document.getElementById('set-hero').value = set.hero_bg_url || '';
+                document.getElementById('set-map').value = set.map_embed_url || '';
+            } catch(e) { console.error('Error loading settings', e); }
+        }
+
+        // Setup Realtime Settings Subscription
+        subscribeToSettings((newSettings) => {
+            console.log("Settings updated in real-time:", newSettings);
+            // If the settings tab is currently visible, refresh the form values
+            if (document.getElementById('tab-settings').classList.contains('block')) {
+                renderSettingsForm();
+            }
+        });
+
+        document.getElementById('settings-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const toast = document.getElementById('settings-toast');
+            try {
+                await updateSettings({
+                    usd_to_egp_rate: parseFloat(document.getElementById('set-rate').value),
+                    hero_bg_url: document.getElementById('set-hero').value,
+                    map_embed_url: document.getElementById('set-map').value
+                });
+                toast.classList.remove('hidden');
+                setTimeout(() => toast.classList.add('hidden'), 3000);
+            } catch(e) {
+                alert("Failed to update settings");
+            }
+        });
+
+        // ==== TAB LOGIC ====
+        document.querySelectorAll('.nav-tab').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                // Reset all tabs
+                document.querySelectorAll('.nav-tab').forEach(b => {
+                    b.classList.remove('text-primary', 'bg-white/5');
+                    b.classList.add('text-neutral-400');
+                });
+                document.querySelectorAll('.tab-content').forEach(c => {
+                    c.classList.add('hidden');
+                    c.classList.remove('block');
+                });
+
+                // Activate clicked
+                const target = e.target.getAttribute('data-target');
+                e.target.classList.add('text-primary', 'bg-white/5');
+                e.target.classList.remove('text-neutral-400');
+                document.getElementById(target).classList.remove('hidden');
+                document.getElementById(target).classList.add('block');
+
+                // Load Data dynamically when tab is opened
+                if(target === 'tab-products') renderProductsTable();
+                if(target === 'tab-brands') renderBrandsTable();
+                if(target === 'tab-categories') renderCategoriesTable();
+                if(target === 'tab-inquiries') renderInquiriesTable();
+                if(target === 'tab-settings') renderSettingsForm();
+            });
+        });
+
+        // Init
+        checkAuth().then(() => {
+            if(!document.getElementById('dashboard-view').classList.contains('hidden')) {
+                renderProductsTable();
+            }
+        });
+    </script>
+</body>
+</html>
