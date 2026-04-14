@@ -50,16 +50,19 @@
 
     <!-- Generic Modal for Forms -->
     <div id="crud-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
-        <div class="bg-surface-container-low border border-outline-variant p-8 max-w-lg w-full relative">
+        <div id="crud-modal-box" class="bg-[#131313] border border-outline-variant p-8 w-full max-w-4xl max-h-[90vh] overflow-y-auto relative rounded shadow-2xl">
             <button id="close-crud-modal" class="absolute top-4 right-4 text-neutral-500 hover:text-white">
                 <span class="material-symbols-outlined">close</span>
             </button>
-            <h2 id="modal-title" class="text-2xl font-bold uppercase mb-6 text-white">Form</h2>
-            <form id="crud-form" class="space-y-4">
-                <div id="crud-form-fields" class="space-y-4"></div>
+            <h2 id="modal-title" class="text-2xl font-bold tracking-tight text-white mb-6 pb-4 border-b border-outline-variant">Form</h2>
+            <form id="crud-form" class="space-y-6">
+                <div id="crud-form-fields" class="space-y-6"></div>
                 <input type="hidden" id="crud-id" />
                 <input type="hidden" id="crud-type" />
-                <button type="submit" class="w-full bg-primary text-black font-bold uppercase tracking-widest py-3 mt-4 hover:brightness-110">Save</button>
+                <div class="flex justify-end border-t border-outline-variant pt-6 gap-4">
+                     <button type="button" id="cancel-crud" class="text-xs uppercase tracking-widest text-neutral-400 font-bold hover:text-white px-6">Cancel</button>
+                     <button type="submit" class="bg-primary text-black font-bold text-sm tracking-tight py-3 px-8 rounded hover:brightness-110">Save</button>
+                </div>
             </form>
         </div>
     </div>
@@ -173,23 +176,79 @@
             <!-- TAB: SETTINGS -->
             <section id="tab-settings" class="tab-content hidden">
                 <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold uppercase tracking-tight text-white">Global Settings</h2>
+                    <h2 class="text-3xl font-bold tracking-tight text-white">Settings</h2>
                 </div>
-                <form id="settings-form" class="space-y-6 max-w-xl bg-surface-container-low p-8 border border-outline-variant">
-                    <div>
-                        <label class="block uppercase tracking-widest text-[10px] text-neutral-400 mb-2">Exchange Rate (USD to EGP)</label>
-                        <input id="set-rate" type="number" step="0.01" class="w-full bg-transparent border-0 border-b border-outline-variant focus:border-primary text-white py-2 px-0" placeholder="e.g. 50"/>
+                <form id="settings-form" class="max-w-3xl border border-outline-variant rounded p-8 space-y-10">
+                    
+                    <!-- Currency Exchange -->
+                    <div class="space-y-4">
+                        <h3 class="text-[10px] font-bold text-primary uppercase tracking-widest border-b border-outline-variant pb-2">Currency Exchange</h3>
+                        <div>
+                            <label class="block text-[11px] text-neutral-400 mb-2">1 USD to EGP Rate</label>
+                            <input id="set-rate" type="number" step="0.01" class="w-full bg-[#131313] border border-outline-variant focus:border-primary text-white rounded p-3 text-sm" placeholder="e.g. 50.0" />
+                        </div>
                     </div>
-                    <div>
-                        <label class="block uppercase tracking-widest text-[10px] text-neutral-400 mb-2">Hero Background Image URL</label>
-                        <input id="set-hero" type="url" class="w-full bg-transparent border-0 border-b border-outline-variant focus:border-primary text-white py-2 px-0" placeholder="https://..."/>
+
+                    <!-- Hero Section -->
+                    <div class="space-y-4">
+                        <h3 class="text-[10px] font-bold text-primary uppercase tracking-widest border-b border-outline-variant pb-2">Hero Section</h3>
+                        <div>
+                            <label class="block text-[11px] text-neutral-400 mb-2">Background Cover Photo (Upload File)</label>
+                            <div class="flex items-center gap-4 bg-[#1c1b1b] border border-[#2b2a2a] rounded p-2 mb-2">
+                                <input type="file" id="set-hero-file" class="hidden" accept="image/*"/>
+                                <button type="button" class="bg-primary text-black font-bold text-xs py-2 px-4 rounded-full" onclick="document.getElementById('set-hero-file').click()">Choose File</button>
+                                <span id="set-hero-name" class="text-xs text-neutral-400">No file chosen</span>
+                            </div>
+                            <input type="hidden" id="set-hero" value="" />
+                            <div id="set-hero-preview" class="hidden mt-2 p-2 bg-white/5 border border-outline-variant rounded inline-block"></div>
+                        </div>
                     </div>
-                    <div>
-                        <label class="block uppercase tracking-widest text-[10px] text-neutral-400 mb-2">Google Map Embed Link</label>
-                        <input id="set-map" type="url" class="w-full bg-transparent border-0 border-b border-outline-variant focus:border-primary text-white py-2 px-0" placeholder="https://www.google.com/maps/embed?..."/>
+
+                    <!-- Location & Map -->
+                    <div class="space-y-4">
+                        <h3 class="text-[10px] font-bold text-primary uppercase tracking-widest border-b border-outline-variant pb-2">Location & Map</h3>
+                        <div>
+                            <label class="block text-[11px] text-neutral-400 mb-2">Google Maps Embed URL (or Iframe code)</label>
+                            <input id="set-map" type="text" class="w-full bg-[#131313] border border-outline-variant focus:border-primary text-white rounded p-3 text-sm font-mono" placeholder='<iframe src="...">' />
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-neutral-400 mb-2">Location Pin Link (Google Maps Share Link)</label>
+                            <input id="set-pin" type="url" class="w-full bg-[#131313] border border-outline-variant focus:border-primary text-white rounded p-3 text-sm" placeholder="https://maps.app.goo.gl/..." />
+                        </div>
                     </div>
-                    <button type="submit" class="w-full bg-primary text-black font-bold uppercase tracking-widest py-3 px-6 hover:brightness-110 mt-4">Save Settings</button>
-                    <p id="settings-toast" class="text-green-500 text-sm hidden text-center pt-2">Settings updated successfully.</p>
+
+                    <!-- Social Presence -->
+                    <div class="space-y-6">
+                        <h3 class="text-[10px] font-bold text-primary uppercase tracking-widest border-b border-outline-variant pb-2">Social Presence</h3>
+                        
+                        <div>
+                            <label class="block text-[11px] text-neutral-400 mb-2 uppercase font-bold tracking-widest">Instagram</label>
+                            <input id="set-inst" type="url" class="w-full bg-[#131313] border border-outline-variant focus:border-primary text-white rounded p-3 text-sm" placeholder="https://instagram.com/..." />
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-neutral-400 mb-2 uppercase font-bold tracking-widest">Facebook</label>
+                            <input id="set-fb" type="url" class="w-full bg-[#131313] border border-outline-variant focus:border-primary text-white rounded p-3 text-sm" placeholder="https://facebook.com/..." />
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-neutral-400 mb-2 uppercase font-bold tracking-widest">TikTok</label>
+                            <input id="set-tk" type="url" class="w-full bg-[#131313] border border-outline-variant focus:border-primary text-white rounded p-3 text-sm" placeholder="https://tiktok.com/@..." />
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-[11px] text-neutral-400 mb-2 uppercase font-bold tracking-widest">WhatsApp Number</label>
+                                <input id="set-wa" type="tel" class="w-full bg-[#131313] border border-outline-variant focus:border-primary text-white rounded p-3 text-sm" placeholder="+123456789" />
+                            </div>
+                            <div>
+                                <label class="block text-[11px] text-neutral-400 mb-2 uppercase font-bold tracking-widest">Phone Number</label>
+                                <input id="set-ph" type="tel" class="w-full bg-[#131313] border border-outline-variant focus:border-primary text-white rounded p-3 text-sm" placeholder="+123456789" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 flex justify-between items-center border-t border-outline-variant mt-8">
+                        <p id="settings-toast" class="text-green-500 font-bold tracking-widest text-xs hidden uppercase">Settings Saved!</p>
+                        <button type="submit" id="btn-save-settings" class="bg-primary text-black font-bold tracking-tight rounded py-3 px-8 text-sm hover:brightness-110 ml-auto">Save Settings</button>
+                    </div>
                 </form>
             </section>
 
@@ -202,9 +261,16 @@
         import { getCategories, createCategory, updateCategory, deleteCategory } from './categories.js';
         import { getMessages, markMessageRead } from './messages.js';
         import { getSettings, updateSettings, subscribeToSettings } from './settings.js';
+        import { uploadImage } from './storage.js';
 
         const loginView = document.getElementById('login-view');
         const dashboardView = document.getElementById('dashboard-view');
+
+        // File listener for settings hero
+        document.getElementById('set-hero-file').addEventListener('change', e => {
+            const file = e.target.files[0];
+            if (file) document.getElementById('set-hero-name').textContent = file.name;
+        });
 
         // Modal State
         const crudModal = document.getElementById('crud-modal');
@@ -249,34 +315,273 @@
 
         // ==== CRUD MODAL LOGIC ====
 
-        window.openModal = function(type, id = null, dataStr = null) {
+        window.openModal = async function(type, id = null, dataStr = null) {
             crudType.value = type;
             crudId.value = id || '';
             let data = dataStr ? JSON.parse(decodeURIComponent(dataStr)) : {};
 
+            const modalBox = document.getElementById('crud-modal-box');
             if (type === 'product') {
+                modalBox.classList.replace('max-w-xl', 'max-w-4xl');
                 modalTitle.textContent = id ? 'Edit Vehicle' : 'Add Vehicle';
+                
+                // Fetch dynamic dropdowns
+                const brs = await getBrands();
+                const cts = await getCategories();
+                const brandOpts = brs.map(b => `<option value="${b.id}" ${b.id === data.brand_id ? 'selected' : ''}>${escapeHTML(b.name)}</option>`).join('');
+                const catOpts = cts.map(c => `<option value="${c.id}" ${c.id === data.category_id ? 'selected' : ''}>${escapeHTML(c.name_en)}</option>`).join('');
+
                 crudFormFields.innerHTML = `
-                    <div><label class="block text-[10px] uppercase text-neutral-400">Name</label><input id="f-name" required value="${escapeHTML(data.name || '')}" class="w-full bg-transparent border-0 border-b border-outline-variant focus:border-primary text-white py-2 px-0" /></div>
-                    <div><label class="block text-[10px] uppercase text-neutral-400">Price USD</label><input id="f-price" type="number" value="${data.price_usd || ''}" class="w-full bg-transparent border-0 border-b border-outline-variant focus:border-primary text-white py-2 px-0" /></div>
-                    <div><label class="block text-[10px] uppercase text-neutral-400">Main Image URL</label><input id="f-main-image" value="${escapeHTML(data.main_image_url || '')}" class="w-full bg-transparent border-0 border-b border-outline-variant focus:border-primary text-white py-2 px-0" placeholder="https://..." /></div>
-                    <div><label class="block text-[10px] uppercase text-neutral-400">Gallery URLs (comma-separated)</label><input id="f-gallery" value="${escapeHTML((data.gallery_urls || []).join(', '))}" class="w-full bg-transparent border-0 border-b border-outline-variant focus:border-primary text-white py-2 px-0" placeholder="https://..., https://..." /></div>
-                    <div><label class="block text-[10px] uppercase text-neutral-400">Available Colors (comma-separated, hex or names)</label><input id="f-colors" value="${escapeHTML(data.colors ? (typeof data.colors === 'string' ? JSON.parse(data.colors) : data.colors).join(', ') : '')}" class="w-full bg-transparent border-0 border-b border-outline-variant focus:border-primary text-white py-2 px-0" placeholder="Red, Blue, #FFFFFF" /></div>
-                    <div class="flex gap-4">
-                        <label class="flex items-center text-white text-sm"><input type="checkbox" id="f-sold" ${data.is_sold_out ? 'checked' : ''} class="mr-2 accent-primary"/> Sold Out</label>
-                        <label class="flex items-center text-white text-sm"><input type="checkbox" id="f-spot" ${data.is_spotlight ? 'checked' : ''} class="mr-2 accent-primary"/> Spotlight</label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        
+                        <!-- Col 1: Basic Info -->
+                        <div class="space-y-4">
+                            <h3 class="text-[10px] font-bold text-primary uppercase tracking-widest border-b border-outline-variant pb-2">Basic Information</h3>
+                            <div>
+                                <label class="block text-[11px] text-neutral-400 mb-1">Vehicle Name (English)</label>
+                                <input id="f-name" required value="${escapeHTML(data.name || '')}" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm" placeholder="Mercedes-Benz G63 AMG" />
+                            </div>
+                            <div>
+                                <label class="block text-[11px] text-neutral-400 mb-1">Vehicle Name (Arabic)</label>
+                                <input id="f-name-ar" dir="rtl" value="${escapeHTML(data.name_ar || '')}" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm" placeholder="مرسيدس جي 63" />
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[11px] text-neutral-400 mb-1">Price (EGP)</label>
+                                    <input id="f-price-egp" type="number" value="${data.price_egp || ''}" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm" placeholder="12500000" />
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] text-neutral-400 mb-1">Category</label>
+                                    <select id="f-cat" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm appearance-none">
+                                        <option value="">Select Category</option>
+                                        ${catOpts}
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] text-neutral-400 mb-1">Origin</label>
+                                <input id="f-origin" value="${escapeHTML(data.origin || '')}" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm" placeholder="Imported" />
+                            </div>
+                        </div>
+
+                        <!-- Col 2: Specs -->
+                        <div class="space-y-4">
+                            <h3 class="text-[10px] font-bold text-primary uppercase tracking-widest border-b border-outline-variant pb-2">Specifications</h3>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[11px] text-neutral-400 mb-1">Mileage</label>
+                                    <input id="f-mileage" type="number" value="${data.mileage !== undefined && data.mileage !== null ? data.mileage : ''}" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm" placeholder="0" />
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] text-neutral-400 mb-1">Transmission</label>
+                                    <input id="f-transmission" value="${escapeHTML(data.transmission || '')}" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm" placeholder="Automatic" />
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] text-neutral-400 mb-1">Fuel Type</label>
+                                    <input id="f-fuel" value="${escapeHTML(data.fuel_type || '')}" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm" placeholder="Petrol" />
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] text-neutral-400 mb-1">Version/Year</label>
+                                    <input id="f-version" value="${escapeHTML(data.version || data.year || '')}" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm" placeholder="2024" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Description Block -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8 pt-8 border-t border-outline-variant">
+                        <div>
+                            <label class="block text-[11px] text-neutral-400 mb-2 font-bold tracking-widest">Description (English)</label>
+                            <textarea id="f-desc" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm h-32 resize-none">${escapeHTML(data.description || '')}</textarea>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-neutral-400 mb-2 font-bold tracking-widest">Description (Arabic)</label>
+                            <textarea id="f-desc-ar" dir="rtl" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm h-32 resize-none">${escapeHTML(data.description_ar || '')}</textarea>
+                        </div>
+                    </div>
+
+                    <!-- Images Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+                        <div>
+                            <label class="block text-[11px] text-neutral-400 mb-2 font-bold tracking-widest">Main Thumbnail (Cover Photo)</label>
+                            <div class="flex items-center gap-4 bg-[#1c1b1b] border border-[#2b2a2a] rounded p-2 mb-2">
+                                <input type="file" id="f-main-upload" class="hidden" accept="image/*"/>
+                                <button type="button" class="bg-primary text-black font-bold text-xs py-2 px-4 rounded-full" onclick="document.getElementById('f-main-upload').click()">Choose File</button>
+                                <span id="f-main-label" class="text-xs text-neutral-400">No file chosen</span>
+                            </div>
+                            <input type="hidden" id="f-main-url" value="${escapeHTML(data.image_url || '')}"/>
+                            ${data.image_url ? `<img src="${escapeHTML(data.image_url)}" class="h-20 rounded object-cover mt-2 border border-outline-variant" />` : ''}
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-neutral-400 mb-2 font-bold tracking-widest">Diagnostics (Optional)</label>
+                            <div class="flex items-center gap-4 bg-[#1c1b1b] border border-[#2b2a2a] rounded p-2 mb-2 opacity-70">
+                                <input type="file" id="f-diag-upload" class="hidden" accept="application/pdf,image/*"/>
+                                <button type="button" class="bg-primary text-black font-bold text-xs py-2 px-4 rounded-full opacity-50 cursor-not-allowed">Choose File</button>
+                                <span class="text-xs text-neutral-500">Attach Report (Disabled in UI mock)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4 mt-8">
+                        <label class="block text-[11px] text-neutral-400 font-bold tracking-widest uppercase">Brand & Status</label>
+                        <select id="f-brand" class="w-1/3 bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm appearance-none mb-4">
+                            <option value="">Select Brand</option>
+                            ${brandOpts}
+                        </select>
+                        <div class="flex gap-6 items-center flex-wrap">
+                            <label class="flex items-center text-white text-sm font-bold cursor-pointer"><input type="checkbox" id="f-spot" ${data.is_spotlight ? 'checked' : ''} class="mr-2 text-primary focus:ring-primary bg-[#1c1b1b] border-[#2b2a2a] rounded"/> Spotlight (Home Page)</label>
+                            <label class="flex items-center text-white text-sm font-bold cursor-pointer"><input type="checkbox" id="f-req" ${data.upon_request ? 'checked' : ''} class="mr-2 text-primary focus:ring-primary bg-[#1c1b1b] border-[#2b2a2a] rounded"/> Upon Request</label>
+                            <label class="flex items-center text-red-400 text-sm font-bold cursor-pointer"><input type="checkbox" id="f-sold" ${data.is_sold_out ? 'checked' : ''} class="mr-2 text-red-500 focus:ring-red-500 bg-[#1c1b1b] border-[#2b2a2a] rounded"/> Mark as Sold Out</label>
+                        </div>
+                    </div>
+
+                    <!-- Color Variants Block -->
+                    <div id="v-colors-block" class="mt-8 pt-8 border-t border-outline-variant space-y-4">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-[10px] font-bold text-primary uppercase tracking-widest">Color Variants</h3>
+                            <button type="button" id="btn-add-color" class="flex items-center gap-2 border border-outline-variant rounded py-1 px-3 text-primary text-[10px] uppercase font-bold hover:bg-white/5"><span class="material-symbols-outlined text-[14px]">add</span> Add Color</button>
+                        </div>
+                        <div id="v-colors-list" class="space-y-4"></div>
+                    </div>
+
+                    <!-- Gallery Block -->
+                    <div id="v-gallery-block" class="mt-8 pt-8 border-t border-outline-variant space-y-4">
+                        <h3 class="text-[10px] font-bold text-primary uppercase tracking-widest">Gallery Images</h3>
+                        <div class="border border-dashed border-outline-variant rounded p-8 flex flex-col items-center justify-center cursor-pointer hover:bg-white/5" onclick="document.getElementById('f-global-gallery').click()">
+                            <span class="material-symbols-outlined text-4xl text-neutral-500 mb-2">add_a_photo</span>
+                            <span class="text-sm font-bold text-neutral-400 mb-2">Click to upload multiple images</span>
+                            <input type="file" id="f-global-gallery" multiple class="hidden" accept="image/*" />
+                        </div>
+                        <div id="v-gallery-preview" class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4"></div>
                     </div>
                 `;
+
+                // GLOBAL STATE FOR MODAL
+                window.modalColors = data.colors ? (typeof data.colors === 'string' ? JSON.parse(data.colors) : data.colors) : [];
+                window.modalGlobalGalleryUrls = data.gallery || data.gallery_urls || [];
+                window.modalFilesQueue = []; // { type: 'gallery'|'color', cid: null, file: File }
+
+                // RENDER FUNCTIONS
+                const renderColors = () => {
+                    const cl = document.getElementById('v-colors-list');
+                    if(!cl) return;
+                    cl.innerHTML = window.modalColors.map((c, i) => `
+                        <div class="border border-[#2b2a2a] rounded p-4 bg-[#1c1b1b] relative">
+                            <button type="button" class="absolute top-4 right-4 text-red-500 hover:text-red-400" onclick="window.removeColor(${i})"><span class="material-symbols-outlined text-sm">delete</span></button>
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-6 h-6 rounded-full border border-outline-variant" style="background-color: ${c.hex || '#000'}"></div>
+                                <span class="font-bold text-white">${escapeHTML(c.name_en || 'New Color')}</span>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                <div>
+                                    <label class="block text-[9px] uppercase text-neutral-500 font-bold mb-1">Color</label>
+                                    <div class="flex">
+                                        <input type="color" onchange="window.updateColor(${i}, 'hex', this.value)" value="${c.hex || '#000000'}" class="w-8 h-8 rounded shrink-0 p-0 border-0 cursor-pointer" />
+                                        <input type="text" onchange="window.updateColor(${i}, 'hex', this.value)" value="${c.hex || '#000000'}" class="w-full bg-[#131313] border border-outline-variant text-white text-xs ml-2 px-2" />
+                                    </div>
+                                </div>
+                                <div><label class="block text-[9px] uppercase text-neutral-500 font-bold mb-1">Name (EN)</label><input type="text" onchange="window.updateColor(${i}, 'name_en', this.value)" value="${escapeHTML(c.name_en || '')}" class="w-full bg-[#131313] border border-outline-variant text-white text-xs px-2 py-1.5" /></div>
+                                <div><label class="block text-[9px] uppercase text-neutral-500 font-bold mb-1">Name (AR)</label><input type="text" onchange="window.updateColor(${i}, 'name_ar', this.value)" value="${escapeHTML(c.name_ar || '')}" class="w-full bg-[#131313] border border-outline-variant text-white text-xs px-2 py-1.5" /></div>
+                                <div>
+                                    <label class="block text-[9px] uppercase text-neutral-500 font-bold mb-1">Gallery (${(c.gallery_urls || []).length} imgs)</label>
+                                    <div class="flex items-center gap-2 border border-outline-variant rounded p-1 bg-[#131313] relative overflow-hidden">
+                                        <button type="button" class="text-primary text-[10px] font-bold px-2 py-1 hover:bg-white/5 w-full text-left" onclick="document.getElementById('c-upload-${i}').click()">+ Upload</button>
+                                        <input type="file" id="c-upload-${i}" multiple class="hidden" accept="image/*" onchange="window.queueColorFiles(${i}, this)" />
+                                    </div>
+                                    <div class="flex gap-1 mt-2 overflow-x-auto">
+                                       ${(c.gallery_urls || []).map(url => `<img src="${url}" class="h-6 w-6 object-cover rounded border border-outline-variant" />`).join('')}
+                                       ${window.modalFilesQueue.filter(f => f.type === 'color' && f.cid === i).map(q => `<div class="h-6 w-6 rounded bg-primary animate-pulse text-[6px] grid place-items-center text-black font-bold">NEW</div>`).join('')}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                };
+
+                const renderGlobalGallery = () => {
+                    const gg = document.getElementById('v-gallery-preview');
+                    if(!gg) return;
+                    let html = window.modalGlobalGalleryUrls.map((url, i) => `
+                        <div class="relative group">
+                           <img src="${url}" class="h-20 w-full object-cover rounded border border-outline-variant" />
+                           <button type="button" class="absolute top-1 right-1 bg-black/80 text-red-500 rounded p-1 hidden group-hover:block" onclick="window.removeGlobalGallery(${i})"><span class="material-symbols-outlined text-[10px]">close</span></button>
+                        </div>
+                    `).join('');
+                    // Queue UI
+                    window.modalFilesQueue.filter(f => f.type === 'gallery').forEach((q) => {
+                        html += `<div class="relative opacity-50"><img src="${URL.createObjectURL(q.file)}" class="h-20 w-full object-cover rounded border border-primary" /><span class="absolute bottom-1 left-1 text-[8px] bg-black px-1 rounded text-primary uppercase font-bold tracking-widest">Pending</span></div>`;
+                    });
+                    gg.innerHTML = html;
+                };
+
+                window.updateColor = (i, prop, val) => { window.modalColors[i][prop] = val; renderColors(); };
+                window.removeColor = (i) => { window.modalColors.splice(i, 1); renderColors(); };
+                window.queueColorFiles = (i, input) => {
+                    Array.from(input.files).forEach(file => window.modalFilesQueue.push({ type: 'color', cid: i, file }));
+                    renderColors();
+                };
+                window.removeGlobalGallery = (i) => { window.modalGlobalGalleryUrls.splice(i, 1); renderGlobalGallery(); };
+
+                // Handle file input text replacement instantly for UI
+                requestAnimationFrame(() => {
+                    document.getElementById('f-main-upload').addEventListener('change', e => {
+                        const file = e.target.files[0];
+                        if (file) document.getElementById('f-main-label').textContent = file.name;
+                    });
+                    document.getElementById('btn-add-color').addEventListener('click', () => {
+                        window.modalColors.push({ hex: '#000000', name_en: 'New Color', name_ar: '', gallery_urls: [] });
+                        renderColors();
+                    });
+                    const ggInput = document.getElementById('f-global-gallery');
+                    if (ggInput) {
+                        ggInput.addEventListener('change', (e) => {
+                            Array.from(e.target.files).forEach(file => window.modalFilesQueue.push({ type: 'gallery', file }));
+                            renderGlobalGallery();
+                        });
+                    }
+                    renderColors();
+                    renderGlobalGallery();
+                });
+
             } else if (type === 'brand') {
+                modalBox.classList.remove('max-w-4xl');
+                modalBox.classList.add('max-w-xl');
                 modalTitle.textContent = id ? 'Edit Brand' : 'Add Brand';
                 crudFormFields.innerHTML = `
-                    <div><label class="block text-[10px] uppercase text-neutral-400">Name</label><input id="f-name" required value="${data.name || ''}" class="w-full bg-transparent border-0 border-b border-outline-variant focus:border-primary text-white py-2 px-0" /></div>
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-[11px] text-neutral-400 mb-2 font-bold tracking-widest">Brand Name</label>
+                            <input id="f-name" required value="${escapeHTML(data.name || '')}" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3 text-sm" placeholder="Audi" />
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-neutral-400 mb-2 font-bold tracking-widest mt-6">Logo</label>
+                            <div class="flex items-center gap-4 bg-[#1c1b1b] border border-[#2b2a2a] rounded p-2">
+                                <input type="file" id="f-logo-file" class="hidden" accept="image/*"/>
+                                <button type="button" class="bg-primary text-black font-bold text-xs py-2 px-6 rounded-full" onclick="document.getElementById('f-logo-file').click()">Choose File</button>
+                                <span id="f-logo-name" class="text-xs text-neutral-400 truncate">No file chosen</span>
+                            </div>
+                            <input type="hidden" id="f-logo-url" value="${escapeHTML(data.logo_url || '')}"/>
+                            ${data.logo_url ? `<div class="mt-4 p-4 bg-white/5 rounded border border-[#2b2a2a] inline-block"><img src="${escapeHTML(data.logo_url)}" class="h-12 object-contain" /></div>` : ''}
+                        </div>
+                    </div>
                 `;
+
+                requestAnimationFrame(() => {
+                    document.getElementById('f-logo-file').addEventListener('change', e => {
+                        const file = e.target.files[0];
+                        if (file) document.getElementById('f-logo-name').textContent = file.name;
+                    });
+                });
+
             } else if (type === 'category') {
+                modalBox.classList.remove('max-w-4xl');
+                modalBox.classList.add('max-w-xl');
                 modalTitle.textContent = id ? 'Edit Category' : 'Add Category';
                 crudFormFields.innerHTML = `
-                    <div><label class="block text-[10px] uppercase text-neutral-400">Name (EN)</label><input id="f-name-en" required value="${data.name_en || ''}" class="w-full bg-transparent border-0 border-b border-outline-variant focus:border-primary text-white py-2 px-0" /></div>
-                    <div><label class="block text-[10px] uppercase text-neutral-400">Name (AR)</label><input id="f-name-ar" required value="${data.name_ar || ''}" class="w-full bg-transparent border-0 border-b border-outline-variant focus:border-primary text-white py-2 px-0" /></div>
+                    <div class="space-y-4">
+                        <div><label class="block text-[11px] font-bold tracking-widest uppercase text-neutral-400 mb-2">Name (EN)</label><input id="f-name-en" required value="${data.name_en || ''}" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3" /></div>
+                        <div><label class="block text-[11px] font-bold tracking-widest uppercase text-neutral-400 mb-2">Name (AR)</label><input id="f-name-ar" required dir="rtl" value="${data.name_ar || ''}" class="w-full bg-[#1c1b1b] border border-[#2b2a2a] focus:border-primary text-white rounded p-3" /></div>
+                    </div>
                 `;
             }
             crudModal.classList.remove('hidden');
@@ -291,6 +596,11 @@
                 if(type === 'category') { await deleteCategory(id); renderCategoriesTable(); }
             } catch(e) { alert("Delete failed."); }
         }
+
+        document.getElementById('cancel-crud').addEventListener('click', () => {
+            crudModal.classList.add('hidden');
+            crudModal.classList.remove('flex');
+        });
 
         document.getElementById('close-crud-modal').addEventListener('click', () => {
             crudModal.classList.add('hidden');
@@ -307,25 +617,72 @@
 
             try {
                 if (type === 'product') {
-                    const galleryRaw = document.getElementById('f-gallery').value;
-                    const gallery_urls = galleryRaw ? galleryRaw.split(',').map(s => s.trim()).filter(s => s) : [];
 
-                    const colorsRaw = document.getElementById('f-colors').value;
-                    const colors = colorsRaw ? colorsRaw.split(',').map(s => s.trim()).filter(s => s) : [];
+                    // Upload main image if a new one is selected
+                    const mainFileInput = document.getElementById('f-main-upload');
+                    let finalMainUrl = document.getElementById('f-main-url').value;
+                    if (mainFileInput && mainFileInput.files.length > 0) {
+                        btn.textContent = "Uploading Image...";
+                        finalMainUrl = await uploadImage(mainFileInput.files[0], 'uploads', 'vehicles');
+                        btn.textContent = "Saving Details...";
+                    }
+
+                    // Upload queued gallery and color files asynchronously
+                    if (window.modalFilesQueue && window.modalFilesQueue.length > 0) {
+                        btn.textContent = "Uploading gallery... (0/" + window.modalFilesQueue.length + ")";
+                        let completeCount = 0;
+                        // Concurrent uploads can crash cheap instances, sequentially safe
+                        for (let q of window.modalFilesQueue) {
+                            try {
+                                const url = await uploadImage(q.file, 'uploads', 'vehicles');
+                                if (q.type === 'gallery') window.modalGlobalGalleryUrls.push(url);
+                                if (q.type === 'color' && window.modalColors[q.cid]) {
+                                    if(!window.modalColors[q.cid].gallery_urls) window.modalColors[q.cid].gallery_urls = [];
+                                    window.modalColors[q.cid].gallery_urls.push(url);
+                                }
+                            } catch(e) { console.error('Upload failed for file', q.file.name); }
+                            completeCount++;
+                            btn.textContent = "Uploading gallery... (" + completeCount + "/" + window.modalFilesQueue.length + ")";
+                        }
+                        btn.textContent = "Saving Details...";
+                    }
 
                     const payload = {
                         name: document.getElementById('f-name').value,
-                        price_usd: parseFloat(document.getElementById('f-price').value) || null,
-                        main_image_url: document.getElementById('f-main-image').value || null,
-                        gallery_urls: gallery_urls,
-                        colors: colors,
-                        is_sold_out: document.getElementById('f-sold').checked,
-                        is_spotlight: document.getElementById('f-spot').checked
+                        name_ar: document.getElementById('f-name-ar').value || null,
+                        price_egp: document.getElementById('f-price-egp').value ? parseFloat(document.getElementById('f-price-egp').value) : null,
+                        category_id: document.getElementById('f-cat').value || null,
+                        brand_id: document.getElementById('f-brand').value || null,
+                        origin: document.getElementById('f-origin').value || null,
+                        mileage: document.getElementById('f-mileage').value ? parseInt(document.getElementById('f-mileage').value) : null,
+                        transmission: document.getElementById('f-transmission').value || null,
+                        fuel_type: document.getElementById('f-fuel').value || null,
+                        version: document.getElementById('f-version').value || null,
+                        description: document.getElementById('f-desc').value || null,
+                        description_ar: document.getElementById('f-desc-ar').value || null,
+                        image_url: finalMainUrl || null,
+                        gallery: window.modalGlobalGalleryUrls || [],
+                        colors: window.modalColors || [],
+                        is_spotlight: document.getElementById('f-spot').checked,
+                        upon_request: document.getElementById('f-req').checked,
+                        is_sold_out: document.getElementById('f-sold').checked
                     };
                     id ? await updateVehicle(id, payload) : await createVehicle(payload);
                     renderProductsTable();
                 } else if (type === 'brand') {
-                    const payload = { name: document.getElementById('f-name').value };
+                    // Preflight upload
+                    const logoFileInput = document.getElementById('f-logo-file');
+                    let finalLogoUrl = document.getElementById('f-logo-url').value;
+                    if (logoFileInput && logoFileInput.files.length > 0) {
+                        btn.textContent = "Uploading Image...";
+                        finalLogoUrl = await uploadImage(logoFileInput.files[0], 'uploads', 'brands');
+                        btn.textContent = "Saving Details...";
+                    }
+
+                    const payload = { 
+                        name: document.getElementById('f-name').value,
+                        logo_url: finalLogoUrl || null
+                    };
                     id ? await updateBrand(id, payload) : await createBrand(payload);
                     renderBrandsTable();
                 } else if (type === 'category') {
@@ -338,7 +695,8 @@
                 }
                 document.getElementById('close-crud-modal').click();
             } catch(err) {
-                alert("Save failed.");
+                console.error(err);
+                alert("Save failed. Double check inputs.");
             } finally {
                 btn.textContent = "Save";
                 btn.disabled = false;
@@ -564,7 +922,25 @@
                 const set = await getSettings();
                 document.getElementById('set-rate').value = set.usd_to_egp_rate || '';
                 document.getElementById('set-hero').value = set.hero_bg_url || '';
+                
+                const previewBlock = document.getElementById('set-hero-preview');
+                if (set.hero_bg_url) {
+                    previewBlock.classList.remove('hidden');
+                    previewBlock.innerHTML = `<img src="${escapeHTML(set.hero_bg_url)}" class="h-16 rounded object-cover" />`;
+                } else {
+                    previewBlock.classList.add('hidden');
+                }
+                
+                // Allow iframe block extraction for embed link or raw text
                 document.getElementById('set-map').value = set.map_embed_url || '';
+
+                
+                document.getElementById('set-pin').value = set.location_pin_link || '';
+                document.getElementById('set-inst').value = set.instagram_link || '';
+                document.getElementById('set-fb').value = set.facebook_link || '';
+                document.getElementById('set-tk').value = set.tiktok_link || '';
+                document.getElementById('set-wa').value = set.whatsapp_number || '';
+                document.getElementById('set-ph').value = set.phone_number || '';
             } catch(e) { console.error('Error loading settings', e); }
         }
 
@@ -580,16 +956,46 @@
         document.getElementById('settings-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const toast = document.getElementById('settings-toast');
+            const saveBtn = document.getElementById('btn-save-settings');
+            
+            // Extract src if iframe is provided for map
+            let mapVal = document.getElementById('set-map').value;
+            if (mapVal.includes('<iframe') && mapVal.includes('src="')) {
+                const match = mapVal.match(/src="([^"]+)"/);
+                if (match && match[1]) mapVal = match[1];
+            }
+
             try {
+                saveBtn.disabled = true;
+                saveBtn.textContent = 'Uploading...';
+
+                // Check for Hero file upload
+                const heroFileIn = document.getElementById('set-hero-file');
+                let finalHeroUrl = document.getElementById('set-hero').value;
+                if (heroFileIn && heroFileIn.files.length > 0) {
+                    finalHeroUrl = await uploadImage(heroFileIn.files[0], 'uploads', 'settings');
+                    document.getElementById('set-hero').value = finalHeroUrl;
+                }
+
                 await updateSettings({
                     usd_to_egp_rate: parseFloat(document.getElementById('set-rate').value),
-                    hero_bg_url: document.getElementById('set-hero').value,
-                    map_embed_url: document.getElementById('set-map').value
+                    hero_bg_url: finalHeroUrl,
+                    map_embed_url: mapVal,
+                    location_pin_link: document.getElementById('set-pin').value,
+                    instagram_link: document.getElementById('set-inst').value,
+                    facebook_link: document.getElementById('set-fb').value,
+                    tiktok_link: document.getElementById('set-tk').value,
+                    whatsapp_number: document.getElementById('set-wa').value,
+                    phone_number: document.getElementById('set-ph').value
                 });
                 toast.classList.remove('hidden');
                 setTimeout(() => toast.classList.add('hidden'), 3000);
             } catch(e) {
                 alert("Failed to update settings");
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Save Settings';
+                renderSettingsForm(); // Refresh view
             }
         });
 

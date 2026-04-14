@@ -30,43 +30,60 @@
             }
         };
     </script>
+    <style>
+        /* Premium toggle button style */
+        .nav-toggle-btn {
+            background: #1a1812;
+            border: 1px solid rgba(242, 202, 80, 0.4);
+            color: #f2ca50;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            padding: 5px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .nav-toggle-btn:hover {
+            background: rgba(242, 202, 80, 0.1);
+            border-color: #f2ca50;
+            box-shadow: 0 0 10px rgba(242, 202, 80, 0.2);
+        }
+        .site-brand { text-decoration: none; cursor: pointer; }
+        html, body { overflow-x: hidden; max-width: 100vw; }
+    </style>
 </head>
 <body class="bg-background text-on-surface min-h-screen flex flex-col">
     <!-- TopNavBar -->
-    <nav class="fixed top-0 w-full z-50 bg-neutral-900/80 backdrop-blur-xl flex justify-between items-center px-6 md:px-12 py-6 shadow-2xl shadow-yellow-500/10">
-        <div class="text-2xl font-black tracking-tighter text-primary">MOTOR HUB</div>
+    <nav class="fixed top-0 w-full z-50 bg-neutral-900/80 backdrop-blur-xl flex justify-between items-center px-4 md:px-12 py-5 shadow-2xl shadow-yellow-500/10">
+        <a href="index.html" class="site-brand text-2xl font-black tracking-tighter text-primary hover:opacity-80 transition-opacity">MOTOR HUB</a>
 
         <!-- Desktop Nav -->
-        <div class="hidden md:flex gap-12 items-center">
-            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors" href="inventory.html" data-i18n="nav_inventory">Inventory</a>
-            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors" href="about.html" data-i18n="nav_financing">Financing</a>
-            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors" href="contact.html" data-i18n="nav_contact">Contact</a>
+        <div class="hidden md:flex gap-10 items-center">
+            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors text-sm" href="inventory.html" data-i18n="nav_inventory">Inventory</a>
+            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors text-sm" href="contact.html" data-i18n="nav_contact">Contact</a>
 
             <!-- Toggles -->
-            <button id="lang-toggle" class="text-xs uppercase tracking-widest text-primary border border-primary/30 px-3 py-1 hover:bg-white/5">AR</button>
-            <button id="currency-toggle" class="text-xs uppercase tracking-widest text-primary border border-primary/30 px-3 py-1 hover:bg-white/5" data-currency="USD">USD</button>
+            <button id="lang-toggle" class="nav-toggle-btn">AR</button>
+            <button id="currency-toggle" class="nav-toggle-btn" data-currency="USD">USD</button>
         </div>
 
-        <button class="hidden md:block font-manrope tracking-tight font-bold uppercase text-primary border border-primary/30 px-6 py-2 hover:bg-white/5 transition-all scale-95 duration-300" data-i18n="btn_book_concierge">
-            Book Concierge
-        </button>
-
         <!-- Mobile Menu Button -->
-        <button id="mobile-menu-btn" class="md:hidden text-primary">
+        <button id="mobile-menu-btn" class="md:hidden text-primary p-1">
             <span class="material-symbols-outlined">menu</span>
         </button>
     </nav>
 
     <!-- Mobile Drawer (Hidden by default) -->
-    <div id="mobile-drawer" class="fixed inset-0 bg-neutral-900/95 backdrop-blur-3xl z-40 translate-x-full transition-transform duration-300 flex flex-col pt-32 px-6 pb-12">
+    <div id="mobile-drawer" class="fixed inset-0 bg-neutral-900/95 backdrop-blur-3xl z-40 translate-x-full transition-transform duration-300 flex flex-col pt-28 px-6 pb-12">
         <a class="text-2xl font-bold uppercase text-white mb-6" href="inventory.html" data-i18n="nav_inventory">Inventory</a>
-        <a class="text-2xl font-bold uppercase text-white mb-6" href="about.html" data-i18n="nav_financing">Financing</a>
         <a class="text-2xl font-bold uppercase text-white mb-12" href="contact.html" data-i18n="nav_contact">Contact</a>
-        <button id="mobile-lang-toggle" class="text-lg uppercase text-primary mb-4 text-left">Switch to AR</button>
-        <button id="mobile-currency-toggle" class="text-lg uppercase text-primary text-left">Switch Currency</button>
+        <button id="mobile-lang-toggle" class="nav-toggle-btn text-left mb-4 w-fit">Switch to AR</button>
+        <button id="mobile-currency-toggle" class="nav-toggle-btn text-left w-fit">Switch Currency</button>
     </div>
 
-    <main class="pt-32 pb-24 px-6 md:px-12 max-w-[1600px] mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-16">
+    <main class="pt-28 pb-24 px-4 md:px-12 max-w-[1600px] mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-16">
 
         <!-- Left: Gallery -->
         <div class="flex flex-col gap-4">
@@ -90,18 +107,17 @@
         <!-- Right: Details -->
         <div class="flex flex-col gap-8">
             <header>
-                <h1 id="vehicle-name" class="text-5xl md:text-6xl font-extrabold tracking-tighter uppercase mb-2 text-white">Loading...</h1>
+                <h1 id="vehicle-name" class="text-4xl md:text-5xl font-extrabold tracking-tighter uppercase mb-2 text-white">Loading...</h1>
                 <p id="vehicle-version" class="text-outline-variant uppercase tracking-widest">Version</p>
-                <div class="mt-6 flex items-end gap-4">
-                    <span id="vehicle-price" class="text-4xl font-black text-primary"></span>
-                    <span class="text-sm text-neutral-500 pb-1">USD</span>
+                <div class="mt-6">
+                    <span id="vehicle-price" class="text-3xl md:text-4xl font-black text-primary"></span>
                 </div>
             </header>
 
             <!-- Colors -->
             <div id="color-swatches-container" class="hidden">
                 <span class="text-[10px] uppercase tracking-widest text-outline-variant font-bold block mb-3">Available Colors</span>
-                <div id="color-swatches" class="flex gap-3">
+                <div id="color-swatches" class="flex gap-3 flex-wrap">
                     <!-- Swatches injected via JS -->
                 </div>
             </div>
@@ -138,10 +154,10 @@
                 <button id="inquire-btn" class="bg-primary text-black font-bold uppercase tracking-widest py-4 px-8 hover:brightness-110 flex-1">
                     Inquire Now
                 </button>
-                <a href="tel:+123456789" class="border border-outline-variant text-white font-bold uppercase tracking-widest py-4 px-8 hover:bg-white/5 text-center flex items-center justify-center gap-2">
+                <a href="tel:+123456789" class="border border-outline-variant text-white font-bold uppercase tracking-widest py-4 px-6 hover:bg-white/5 text-center flex items-center justify-center gap-2 flex-1">
                     <span class="material-symbols-outlined text-sm">call</span> Call
                 </a>
-                <a href="https://wa.me/123456789" target="_blank" class="border border-outline-variant text-white font-bold uppercase tracking-widest py-4 px-8 hover:bg-white/5 text-center flex items-center justify-center gap-2">
+                <a href="https://wa.me/123456789" target="_blank" class="border border-outline-variant text-white font-bold uppercase tracking-widest py-4 px-6 hover:bg-white/5 text-center flex items-center justify-center gap-2 flex-1">
                     <span class="material-symbols-outlined text-sm">chat</span> WhatsApp
                 </a>
             </div>
@@ -192,6 +208,26 @@
 
         let currentVehicle = null;
         let isDescExpanded = false;
+        let currentCurrency = localStorage.getItem('currency') || 'USD';
+        let exchangeRate = 50;
+
+        // Load exchange rate
+        try {
+            const { getSettings } = await import('./settings.js');
+            const settings = await getSettings().catch(() => ({}));
+            if (settings && settings.usd_to_egp_rate) exchangeRate = settings.usd_to_egp_rate;
+        } catch(e) {}
+
+        function formatPrice(usdPrice) {
+            if (!usdPrice) return 'Upon Request';
+            const price = currentCurrency === 'USD' ? usdPrice : usdPrice * exchangeRate;
+            return new Intl.NumberFormat('en-US', { style: 'currency', currency: currentCurrency, maximumFractionDigits: 0 }).format(price);
+        }
+
+        function updatePriceDisplay() {
+            if (!currentVehicle) return;
+            document.getElementById('vehicle-price').textContent = formatPrice(currentVehicle.price_usd);
+        }
 
         async function init() {
             const params = new URLSearchParams(window.location.search);
@@ -203,7 +239,6 @@
             }
 
             try {
-                // Fetch vehicle specific details. Using supabase client directly for ease of MVP.
                 const { data, error } = await supabase.from('products').select('*').eq('id', id).single();
                 if (error) throw error;
                 currentVehicle = data;
@@ -236,7 +271,7 @@
             document.getElementById('breadcrumb-name').textContent = v.name;
             document.getElementById('vehicle-name').textContent = v.name;
             document.getElementById('vehicle-version').textContent = v.version || '';
-            document.getElementById('vehicle-price').textContent = v.price_usd ? '$' + v.price_usd.toLocaleString() : 'Upon Request';
+            document.getElementById('vehicle-price').textContent = formatPrice(v.price_usd);
 
             document.getElementById('spec-mileage').textContent = v.mileage ? v.mileage + ' KM' : 'New';
             document.getElementById('spec-transmission').textContent = v.transmission || 'Auto';
@@ -374,6 +409,11 @@
         });
 
         init();
+
+        // Expose updatePriceDisplay for global currency toggle
+        window._detailsUpdatePrice = updatePriceDisplay;
+        window._getDetailsCurrency = () => currentCurrency;
+        window._setDetailsCurrency = (c) => { currentCurrency = c; };
     </script>
 
     <!-- Floating FAB -->
@@ -418,21 +458,15 @@
         // ==== Global Logic ====
         let currentLang = localStorage.getItem('lang') || 'en';
         let currentCurrency = localStorage.getItem('currency') || 'USD';
-        let exchangeRate = 1;
         let translations = {};
 
         async function initGlobal() {
             try {
-                // Fetch translations directly
                 const transRes = await fetch('translations.json').then(r => r.json());
                 translations = transRes;
                 applyLanguage();
-                if (typeof updateCurrencyDisplay === 'function') {
-                    updateCurrencyDisplay();
-                } else {
-                    const cToggle = document.getElementById('currency-toggle');
-                    if (cToggle) cToggle.textContent = currentCurrency;
-                }
+                const cToggle = document.getElementById('currency-toggle');
+                if (cToggle) cToggle.textContent = currentCurrency;
             } catch (err) {
                 console.error("Global init error:", err);
             }
@@ -477,7 +511,11 @@
                 currentCurrency = currentCurrency === 'USD' ? 'EGP' : 'USD';
                 localStorage.setItem('currency', currentCurrency);
                 currToggleBtn.textContent = currentCurrency;
-                if (typeof updateCurrencyDisplay === 'function') updateCurrencyDisplay();
+                // Update price on detail page
+                if (typeof window._setDetailsCurrency === 'function') {
+                    window._setDetailsCurrency(currentCurrency);
+                    window._detailsUpdatePrice && window._detailsUpdatePrice();
+                }
             });
         }
 
@@ -486,7 +524,12 @@
             mcurrToggleBtn.addEventListener('click', () => {
                 currentCurrency = currentCurrency === 'USD' ? 'EGP' : 'USD';
                 localStorage.setItem('currency', currentCurrency);
-                if (typeof updateCurrencyDisplay === 'function') updateCurrencyDisplay();
+                const ct = document.getElementById('currency-toggle');
+                if (ct) ct.textContent = currentCurrency;
+                if (typeof window._setDetailsCurrency === 'function') {
+                    window._setDetailsCurrency(currentCurrency);
+                    window._detailsUpdatePrice && window._detailsUpdatePrice();
+                }
             });
         }
 

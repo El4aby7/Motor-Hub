@@ -6,6 +6,8 @@
     <title>Motor Hub - Contact Us</title>
     <link href="https://fonts.googleapis.com/css2?family=Metropolis:wght@400;500;700&family=Domine:wght@400;500;700&family=Lexend:wght@400;500;700&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <!-- Font Awesome for Social Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
     <script src="https://cdn.tailwindcss.com?plugins=forms">
         </script>
     <script id="tailwind-config">
@@ -27,44 +29,82 @@
     </script>
     <style>
         .gold-gradient { background: linear-gradient(135deg, #f2ca50 0%, #d4af37 100%); }
+        /* Premium toggle button style */
+        .nav-toggle-btn {
+            background: #1a1812;
+            border: 1px solid rgba(242, 202, 80, 0.4);
+            color: #f2ca50;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            padding: 5px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .nav-toggle-btn:hover {
+            background: rgba(242, 202, 80, 0.1);
+            border-color: #f2ca50;
+            box-shadow: 0 0 10px rgba(242, 202, 80, 0.2);
+        }
+        .site-brand { text-decoration: none; cursor: pointer; }
+        html, body { overflow-x: hidden; max-width: 100vw; }
+
+        /* Social Icons */
+        .social-icon-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background-color: var(--color-surface-container-low, #1c1b1b);
+            border: 1px solid rgba(242, 202, 80, 0.4);
+            color: #f2ca50;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        .social-icon-btn:hover {
+            background-color: rgba(242, 202, 80, 0.1);
+            border-color: #f2ca50;
+            box-shadow: 0 0 15px rgba(242, 202, 80, 0.3);
+            transform: translateY(-2px);
+            color: #f2ca50;
+        }
     </style>
 </head>
 <body class="bg-background text-on-surface min-h-screen flex flex-col">
     <!-- TopNavBar -->
-    <nav class="fixed top-0 w-full z-50 bg-neutral-900/80 backdrop-blur-xl flex justify-between items-center px-6 md:px-12 py-6 shadow-2xl shadow-yellow-500/10">
-        <div class="text-2xl font-black tracking-tighter text-primary">MOTOR HUB</div>
+    <nav class="fixed top-0 w-full z-50 bg-neutral-900/80 backdrop-blur-xl flex justify-between items-center px-4 md:px-12 py-5 shadow-2xl shadow-yellow-500/10">
+        <a href="index.html" class="site-brand text-2xl font-black tracking-tighter text-primary hover:opacity-80 transition-opacity">MOTOR HUB</a>
 
         <!-- Desktop Nav -->
-        <div class="hidden md:flex gap-12 items-center">
-            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors" href="inventory.html" data-i18n="nav_inventory">Inventory</a>
-            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors" href="about.html" data-i18n="nav_financing">Financing</a>
-            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors" href="contact.html" data-i18n="nav_contact">Contact</a>
+        <div class="hidden md:flex gap-10 items-center">
+            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors text-sm" href="inventory.html" data-i18n="nav_inventory">Inventory</a>
+            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors text-sm" href="contact.html" data-i18n="nav_contact">Contact</a>
 
             <!-- Toggles -->
-            <button id="lang-toggle" class="text-xs uppercase tracking-widest text-primary border border-primary/30 px-3 py-1 hover:bg-white/5">AR</button>
-            <button id="currency-toggle" class="text-xs uppercase tracking-widest text-primary border border-primary/30 px-3 py-1 hover:bg-white/5" data-currency="USD">USD</button>
+            <button id="lang-toggle" class="nav-toggle-btn">AR</button>
+            <button id="currency-toggle" class="nav-toggle-btn" data-currency="USD">USD</button>
         </div>
 
-        <button class="hidden md:block font-manrope tracking-tight font-bold uppercase text-primary border border-primary/30 px-6 py-2 hover:bg-white/5 transition-all scale-95 duration-300" data-i18n="btn_book_concierge">
-            Book Concierge
-        </button>
-
         <!-- Mobile Menu Button -->
-        <button id="mobile-menu-btn" class="md:hidden text-primary">
+        <button id="mobile-menu-btn" class="md:hidden text-primary p-1">
             <span class="material-symbols-outlined">menu</span>
         </button>
     </nav>
 
     <!-- Mobile Drawer (Hidden by default) -->
-    <div id="mobile-drawer" class="fixed inset-0 bg-neutral-900/95 backdrop-blur-3xl z-40 translate-x-full transition-transform duration-300 flex flex-col pt-32 px-6 pb-12">
+    <div id="mobile-drawer" class="fixed inset-0 bg-neutral-900/95 backdrop-blur-3xl z-40 translate-x-full transition-transform duration-300 flex flex-col pt-28 px-6 pb-12">
         <a class="text-2xl font-bold uppercase text-white mb-6" href="inventory.html" data-i18n="nav_inventory">Inventory</a>
-        <a class="text-2xl font-bold uppercase text-white mb-6" href="about.html" data-i18n="nav_financing">Financing</a>
         <a class="text-2xl font-bold uppercase text-white mb-12" href="contact.html" data-i18n="nav_contact">Contact</a>
-        <button id="mobile-lang-toggle" class="text-lg uppercase text-primary mb-4 text-left">Switch to AR</button>
-        <button id="mobile-currency-toggle" class="text-lg uppercase text-primary text-left">Switch Currency</button>
+        <button id="mobile-lang-toggle" class="nav-toggle-btn text-left mb-4 w-fit">Switch to AR</button>
+        <button id="mobile-currency-toggle" class="nav-toggle-btn text-left w-fit">Switch Currency</button>
     </div>
 
-    <main class="min-h-screen pt-32 pb-12 px-6 md:px-12 max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 w-full">
+    <main class="min-h-screen pt-32 pb-12 px-4 md:px-12 max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 w-full flex-grow">
         <!-- Left: Form -->
         <div class="lg:col-span-7 flex flex-col gap-12">
             <header>
@@ -72,7 +112,7 @@
                 <h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter mb-6 text-white" data-i18n="home_title">CONNECT WITH ELITE</h1>
             </header>
 
-            <section class="bg-surface-container-low p-8 md:p-12 shadow-2xl">
+            <section class="bg-surface-container-low p-6 md:p-12 shadow-2xl">
                 <form id="contact-form" class="space-y-8">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div class="relative">
@@ -87,9 +127,8 @@
                     <div class="relative">
                         <label class="block uppercase tracking-widest text-[10px] text-neutral-400 mb-2" data-i18n="inquiry_type">Inquiry Type</label>
                         <select id="subject" class="w-full bg-transparent border-0 border-b border-outline-variant focus:border-primary focus:ring-0 text-white py-3 px-0 appearance-none">
-                            <option value="Sourcing" class="bg-neutral-900">Vehicle Sourcing</option>
-                            <option value="Management" class="bg-neutral-900">Collection Management</option>
-                            <option value="Other" class="bg-neutral-900">Other</option>
+                            <option value="General Inquiry" class="bg-neutral-900" selected>General Inquiry</option>
+                            <option value="Contact Support" class="bg-neutral-900">Contact Support</option>
                         </select>
                     </div>
                     <div class="relative">
@@ -118,9 +157,23 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
-                <a href="#" class="border border-outline-variant p-4 text-center hover:border-primary text-neutral-400 hover:text-primary transition-all">Instagram</a>
-                <a href="#" class="border border-outline-variant p-4 text-center hover:border-primary text-neutral-400 hover:text-primary transition-all">WhatsApp</a>
+            <!-- Social Icons Row -->
+            <div class="flex justify-center flex-wrap gap-4 pt-4">
+                <a href="#" class="social-icon-btn" title="Instagram">
+                    <i class="fa-brands fa-instagram"></i>
+                </a>
+                <a href="#" class="social-icon-btn" title="Facebook">
+                    <i class="fa-brands fa-facebook-f"></i>
+                </a>
+                <a href="#" class="social-icon-btn" title="TikTok">
+                    <i class="fa-brands fa-tiktok"></i>
+                </a>
+                <a href="https://wa.me/123456789" class="social-icon-btn" title="WhatsApp">
+                    <i class="fa-brands fa-whatsapp"></i>
+                </a>
+                <a href="tel:+123456789" class="social-icon-btn" title="Call Us">
+                    <i class="fa-solid fa-phone"></i>
+                </a>
             </div>
         </div>
     </main>
@@ -217,21 +270,15 @@
         // ==== Global Logic ====
         let currentLang = localStorage.getItem('lang') || 'en';
         let currentCurrency = localStorage.getItem('currency') || 'USD';
-        let exchangeRate = 1;
         let translations = {};
 
         async function initGlobal() {
             try {
-                // Fetch translations directly
                 const transRes = await fetch('translations.json').then(r => r.json());
                 translations = transRes;
                 applyLanguage();
-                if (typeof updateCurrencyDisplay === 'function') {
-                    updateCurrencyDisplay();
-                } else {
-                    const cToggle = document.getElementById('currency-toggle');
-                    if (cToggle) cToggle.textContent = currentCurrency;
-                }
+                const cToggle = document.getElementById('currency-toggle');
+                if (cToggle) cToggle.textContent = currentCurrency;
             } catch (err) {
                 console.error("Global init error:", err);
             }
@@ -276,7 +323,6 @@
                 currentCurrency = currentCurrency === 'USD' ? 'EGP' : 'USD';
                 localStorage.setItem('currency', currentCurrency);
                 currToggleBtn.textContent = currentCurrency;
-                if (typeof updateCurrencyDisplay === 'function') updateCurrencyDisplay();
             });
         }
 
@@ -285,7 +331,8 @@
             mcurrToggleBtn.addEventListener('click', () => {
                 currentCurrency = currentCurrency === 'USD' ? 'EGP' : 'USD';
                 localStorage.setItem('currency', currentCurrency);
-                if (typeof updateCurrencyDisplay === 'function') updateCurrencyDisplay();
+                const ct = document.getElementById('currency-toggle');
+                if (ct) ct.textContent = currentCurrency;
             });
         }
 

@@ -25,45 +25,105 @@
             }
         };
     </script>
+    <style>
+        /* Premium toggle button style */
+        .nav-toggle-btn {
+            background: #1a1812;
+            border: 1px solid rgba(242, 202, 80, 0.4);
+            color: #f2ca50;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            padding: 5px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .nav-toggle-btn:hover {
+            background: rgba(242, 202, 80, 0.1);
+            border-color: #f2ca50;
+            box-shadow: 0 0 10px rgba(242, 202, 80, 0.2);
+        }
+        .site-brand { text-decoration: none; cursor: pointer; }
+        html, body { overflow-x: hidden; max-width: 100vw; }
+
+        /* Dual range slider on a single line */
+        .range-slider-container {
+            position: relative;
+            width: 100%;
+            height: 6px;
+            background: #1c1b1b;
+            border-radius: 4px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        .range-slider-container input[type="range"] {
+            position: absolute;
+            width: 100%;
+            height: 6px;
+            top: 0;
+            background: none;
+            pointer-events: none;
+            -webkit-appearance: none;
+            appearance: none;
+            margin: 0;
+            outline: none;
+        }
+        .range-slider-container input[type="range"]::-webkit-slider-thumb {
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: #f2ca50;
+            pointer-events: auto;
+            -webkit-appearance: none;
+            appearance: none;
+            cursor: pointer;
+            border: 2px solid #131313;
+        }
+        .range-slider-container input[type="range"]::-moz-range-thumb {
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: #f2ca50;
+            pointer-events: auto;
+            cursor: pointer;
+            border: 2px solid #131313;
+        }
+    </style>
 </head>
 <body class="bg-background text-on-surface min-h-screen flex flex-col">
     <!-- TopNavBar -->
-    <nav class="fixed top-0 w-full z-50 bg-neutral-900/80 backdrop-blur-xl flex justify-between items-center px-6 md:px-12 py-6 shadow-2xl shadow-yellow-500/10">
-        <div class="text-2xl font-black tracking-tighter text-primary">MOTOR HUB</div>
+    <nav class="fixed top-0 w-full z-50 bg-neutral-900/80 backdrop-blur-xl flex justify-between items-center px-4 md:px-12 py-5 shadow-2xl shadow-yellow-500/10">
+        <a href="index.html" class="site-brand text-2xl font-black tracking-tighter text-primary hover:opacity-80 transition-opacity">MOTOR HUB</a>
 
         <!-- Desktop Nav -->
-        <div class="hidden md:flex gap-12 items-center">
-            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors" href="inventory.html" data-i18n="nav_inventory">Inventory</a>
-            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors" href="about.html" data-i18n="nav_financing">Financing</a>
-            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors" href="contact.html" data-i18n="nav_contact">Contact</a>
+        <div class="hidden md:flex gap-10 items-center">
+            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors text-sm" href="inventory.html" data-i18n="nav_inventory">Inventory</a>
+            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors text-sm" href="contact.html" data-i18n="nav_contact">Contact</a>
 
             <!-- Toggles -->
-            <button id="lang-toggle" class="text-xs uppercase tracking-widest text-primary border border-primary/30 px-3 py-1 hover:bg-white/5">AR</button>
-            <button id="currency-toggle" class="text-xs uppercase tracking-widest text-primary border border-primary/30 px-3 py-1 hover:bg-white/5" data-currency="USD">USD</button>
+            <button id="lang-toggle" class="nav-toggle-btn">AR</button>
+            <button id="currency-toggle" class="nav-toggle-btn" data-currency="USD">USD</button>
         </div>
 
-        <button class="hidden md:block font-manrope tracking-tight font-bold uppercase text-primary border border-primary/30 px-6 py-2 hover:bg-white/5 transition-all scale-95 duration-300" data-i18n="btn_book_concierge">
-            Book Concierge
-        </button>
-
         <!-- Mobile Menu Button -->
-        <button id="mobile-menu-btn" class="md:hidden text-primary">
+        <button id="mobile-menu-btn" class="md:hidden text-primary p-1">
             <span class="material-symbols-outlined">menu</span>
         </button>
     </nav>
 
     <!-- Mobile Drawer (Hidden by default) -->
-    <div id="mobile-drawer" class="fixed inset-0 bg-neutral-900/95 backdrop-blur-3xl z-40 translate-x-full transition-transform duration-300 flex flex-col pt-32 px-6 pb-12">
+    <div id="mobile-drawer" class="fixed inset-0 bg-neutral-900/95 backdrop-blur-3xl z-40 translate-x-full transition-transform duration-300 flex flex-col pt-28 px-6 pb-12">
         <a class="text-2xl font-bold uppercase text-white mb-6" href="inventory.html" data-i18n="nav_inventory">Inventory</a>
-        <a class="text-2xl font-bold uppercase text-white mb-6" href="about.html" data-i18n="nav_financing">Financing</a>
         <a class="text-2xl font-bold uppercase text-white mb-12" href="contact.html" data-i18n="nav_contact">Contact</a>
-        <button id="mobile-lang-toggle" class="text-lg uppercase text-primary mb-4 text-left">Switch to AR</button>
-        <button id="mobile-currency-toggle" class="text-lg uppercase text-primary text-left">Switch Currency</button>
+        <button id="mobile-lang-toggle" class="nav-toggle-btn text-left mb-4 w-fit">Switch to AR</button>
+        <button id="mobile-currency-toggle" class="nav-toggle-btn text-left w-fit">Switch Currency</button>
     </div>
 
-    <main class="pt-32 pb-24 px-6 md:px-12 max-w-[1600px] mx-auto w-full">
+    <main class="pt-28 pb-24 px-4 md:px-12 max-w-[1600px] mx-auto w-full">
         <!-- Header & Filters -->
-        <header class="mb-16 flex flex-col md:flex-row md:items-start justify-between gap-12">
+        <header class="mb-16 flex flex-col md:flex-row md:items-start justify-between gap-10">
             <div class="max-w-2xl">
                 <span class="text-primary tracking-[0.2em] font-bold text-xs uppercase block mb-4">Elite Collection</span>
                 <h1 class="text-5xl md:text-8xl font-extrabold tracking-tighter leading-none mb-8">PREMIER<br/><span class="text-neutral-500">INVENTORY</span></h1>
@@ -81,11 +141,11 @@
             <div class="flex flex-col gap-6 w-full md:w-[400px]">
                 <!-- Search & Category -->
                 <div class="flex gap-4">
-                    <div class="flex flex-col gap-2 flex-grow">
+                    <div class="flex flex-col gap-2 flex-1 min-w-0">
                         <span class="text-[10px] uppercase tracking-widest text-outline-variant font-bold">Search</span>
                         <input id="search-input" type="text" placeholder="Search..." class="bg-surface-container-low border-none text-white text-sm px-4 py-3 focus:ring-1 focus:ring-primary w-full">
                     </div>
-                    <div class="flex flex-col gap-2 flex-grow">
+                    <div class="flex flex-col gap-2 flex-1 min-w-0">
                         <span class="text-[10px] uppercase tracking-widest text-outline-variant font-bold">Category</span>
                         <select id="category-select" class="bg-surface-container-low border-none text-white text-sm uppercase tracking-widest px-4 py-3 focus:ring-1 focus:ring-primary w-full">
                             <option value="">All Types</option>
@@ -101,15 +161,15 @@
                     </div>
                 </div>
 
-                <!-- Dual Thumb Price Slider (Simulated via two inputs for MVP without extra libs) -->
+                <!-- Price Slider -->
                 <div class="flex flex-col gap-2">
-                    <span class="text-[10px] uppercase tracking-widest text-outline-variant font-bold flex justify-between">
-                        <span>Price Range (USD)</span>
-                        <span id="price-display" class="text-primary">$0 - $1M+</span>
+                    <span class="text-[10px] uppercase tracking-widest text-outline-variant font-bold flex justify-between items-center whitespace-nowrap overflow-hidden">
+                        <span id="price-range-label" class="mr-2 hidden sm:inline">Price Range</span>
+                        <span id="price-display" class="text-primary truncate">$0 - $1M+</span>
                     </span>
-                    <div class="flex items-center gap-2">
-                        <input id="price-min" type="range" min="0" max="1000000" step="10000" value="0" class="w-full accent-primary">
-                        <input id="price-max" type="range" min="0" max="1000000" step="10000" value="1000000" class="w-full accent-primary">
+                    <div class="range-slider-container mt-2">
+                        <input id="price-min" type="range" min="0" max="1000000" step="10000" value="0">
+                        <input id="price-max" type="range" min="0" max="1000000" step="10000" value="1000000">
                     </div>
                 </div>
             </div>
@@ -133,6 +193,17 @@
         let selectedBrandId = '';
         let selectedColorHex = '';
 
+        // Currency state
+        let currentCurrency = localStorage.getItem('currency') || 'USD';
+        let exchangeRate = 50; // fallback
+
+        // Try to load exchange rate from settings
+        try {
+            const { getSettings } = await import('./settings.js');
+            const settings = await getSettings().catch(() => ({}));
+            if (settings && settings.usd_to_egp_rate) exchangeRate = settings.usd_to_egp_rate;
+        } catch(e) {}
+
         const grid = document.getElementById('products-grid');
         const searchInput = document.getElementById('search-input');
         const brandChipsContainer = document.getElementById('brand-chips');
@@ -142,9 +213,14 @@
         const priceDisplay = document.getElementById('price-display');
         const colorDotsContainer = document.getElementById('color-dots');
 
+        function formatPriceFull(usdPrice) {
+            if (!usdPrice) return 'Upon Request';
+            const price = currentCurrency === 'USD' ? usdPrice : usdPrice * exchangeRate;
+            return new Intl.NumberFormat('en-US', { style: 'currency', currency: currentCurrency, maximumFractionDigits: 0 }).format(price);
+        }
+
         async function init() {
             try {
-                // Fetch all required data
                 const [vehiclesRes, brandsRes, categoriesRes] = await Promise.all([
                     getVehicles().catch(() => []),
                     getBrands().catch(() => []),
@@ -196,7 +272,7 @@
                 categorySelect.appendChild(opt);
             });
 
-            // Extract Unique Colors and Populate
+            // Extract Unique Colors
             const uniqueColors = new Map();
             allVehicles.forEach(v => {
                 if (v.colors) {
@@ -230,12 +306,31 @@
                     document.querySelectorAll('.color-dot').forEach(b => b.classList.replace('border-primary', 'border-transparent'));
                     e.target.classList.replace('border-transparent', 'border-primary');
                     if (e.target === allColorBtn) {
-                        e.target.classList.add('border-primary'); // Keep primary on 'All'
+                        e.target.classList.add('border-primary');
                     }
                     selectedColorHex = e.target.getAttribute('data-hex');
                     filterAndRender();
                 });
             });
+
+            // Dynamically set price boundaries based on inventory
+            const prices = allVehicles.map(v => v.price_usd).filter(p => typeof p === 'number');
+            if (prices.length > 0) {
+                let absoluteMin = Math.min(...prices);
+                let absoluteMax = Math.max(...prices);
+
+                // Round min down to nearest 10k, max up to nearest 10k for clean edges
+                absoluteMin = Math.floor(absoluteMin / 10000) * 10000;
+                absoluteMax = Math.ceil(absoluteMax / 10000) * 10000;
+
+                priceMin.min = absoluteMin;
+                priceMin.max = absoluteMax;
+                priceMin.value = absoluteMin;
+                
+                priceMax.min = absoluteMin;
+                priceMax.max = absoluteMax;
+                priceMax.value = absoluteMax;
+            }
         }
 
         function filterAndRender() {
@@ -244,30 +339,30 @@
             let minP = parseInt(priceMin.value);
             let maxP = parseInt(priceMax.value);
 
-            // Ensure min <= max
-            if (minP > maxP) {
-                const tmp = minP; minP = maxP; maxP = tmp;
-            }
+            if (minP > maxP) { const tmp = minP; minP = maxP; maxP = tmp; }
 
-            // Update display
-            const formatMax = maxP >= 1000000 ? '$1M+' : '$' + (maxP/1000).toFixed(0) + 'K';
-            const formatMin = '$' + (minP/1000).toFixed(0) + 'K';
-            priceDisplay.textContent = `${formatMin} - ${formatMax}`;
+            // Update price display dynamically with currency
+            if (currentCurrency === 'EGP') {
+                const minEGP = minP * exchangeRate;
+                const maxEGP = maxP * exchangeRate;
+                const fmtMin = new Intl.NumberFormat('en-US').format(minEGP) + ' EGP';
+                const fmtMax = new Intl.NumberFormat('en-US').format(maxEGP) + (maxP === parseInt(priceMax.max) ? '+ EGP' : ' EGP');
+                priceDisplay.textContent = `${fmtMin} – ${fmtMax}`;
+            } else {
+                const fmtMin = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(minP);
+                const fmtMax = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(maxP) + (maxP === parseInt(priceMax.max) ? '+' : '');
+                priceDisplay.textContent = `${fmtMin} – ${fmtMax}`;
+            }
 
             const filtered = allVehicles.filter(v => {
                 const matchSearch = v.name.toLowerCase().includes(searchTerm) || (v.version && v.version.toLowerCase().includes(searchTerm));
                 const matchBrand = !selectedBrandId || v.brand_id === selectedBrandId;
                 const matchCategory = !categoryId || v.category_id === categoryId;
-
-                // Color match logic: if a vehicle has no colors defined, we only show it if "All Colors" is selected
                 let matchColor = !selectedColorHex;
                 if (selectedColorHex && v.colors) {
                     matchColor = v.colors.some(c => c.hex === selectedColorHex);
                 }
-
-                // Price logic: vehicles without price (Upon Request) bypass filter OR we can hide them. Let's show them.
                 const matchPrice = !v.price_usd || (v.price_usd >= minP && v.price_usd <= maxP);
-
                 return matchSearch && matchBrand && matchCategory && matchColor && matchPrice;
             });
 
@@ -299,7 +394,6 @@
                 return;
             }
 
-            // Simple fav check
             const favs = JSON.parse(localStorage.getItem('favorites') || '[]');
 
             grid.innerHTML = vehicles.map(v => {
@@ -311,7 +405,7 @@
                 const eName = escapeHTML(v.name);
                 const eImg = escapeHTML(v.image_url);
                 const eVersion = escapeHTML(v.version || 'Base Model');
-                const ePrice = v.price_usd ? '$' + v.price_usd.toLocaleString() : 'Upon Request';
+                const ePrice = formatPriceFull(v.price_usd);
                 const eEngine = escapeHTML(v.engine || 'N/A');
                 const eMileage = escapeHTML(v.mileage ? v.mileage + ' KM' : 'New');
 
@@ -329,12 +423,12 @@
                     </button>
 
                     <div class="flex flex-col gap-6">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h3 class="text-3xl font-bold tracking-tight uppercase">${eName}</h3>
+                        <div class="flex justify-between items-start gap-3">
+                            <div class="min-w-0">
+                                <h3 class="text-3xl font-bold tracking-tight uppercase truncate">${eName}</h3>
                                 <p class="text-outline-variant text-sm uppercase tracking-widest mt-1">${eVersion}</p>
                             </div>
-                            <span class="text-2xl font-black text-primary">${escapeHTML(ePrice)}</span>
+                            <span class="text-xl font-black text-primary whitespace-nowrap price-tag" data-usd="${escapeHTML(String(v.price_usd || ''))}">${escapeHTML(ePrice)}</span>
                         </div>
                         <div class="grid grid-cols-2 gap-y-4 border-t border-outline-variant/20 pt-6">
                             <div>
@@ -363,7 +457,7 @@
                 favs.push(id);
             }
             localStorage.setItem('favorites', JSON.stringify(favs));
-            filterAndRender(); // Re-render to update heart icon
+            filterAndRender();
         };
 
         // Listeners
@@ -422,16 +516,11 @@
 
         async function initGlobal() {
             try {
-                // Fetch translations directly
                 const transRes = await fetch('translations.json').then(r => r.json());
                 translations = transRes;
                 applyLanguage();
-                if (typeof updateCurrencyDisplay === 'function') {
-                    updateCurrencyDisplay();
-                } else {
-                    const cToggle = document.getElementById('currency-toggle');
-                    if (cToggle) cToggle.textContent = currentCurrency;
-                }
+                const cToggle = document.getElementById('currency-toggle');
+                if (cToggle) cToggle.textContent = currentCurrency;
             } catch (err) {
                 console.error("Global init error:", err);
             }
@@ -476,7 +565,8 @@
                 currentCurrency = currentCurrency === 'USD' ? 'EGP' : 'USD';
                 localStorage.setItem('currency', currentCurrency);
                 currToggleBtn.textContent = currentCurrency;
-                if (typeof updateCurrencyDisplay === 'function') updateCurrencyDisplay();
+                // Re-filter to refresh price displays
+                if (typeof filterAndRender === 'function') filterAndRender();
             });
         }
 
@@ -485,7 +575,9 @@
             mcurrToggleBtn.addEventListener('click', () => {
                 currentCurrency = currentCurrency === 'USD' ? 'EGP' : 'USD';
                 localStorage.setItem('currency', currentCurrency);
-                if (typeof updateCurrencyDisplay === 'function') updateCurrencyDisplay();
+                const ct = document.getElementById('currency-toggle');
+                if (ct) ct.textContent = currentCurrency;
+                if (typeof filterAndRender === 'function') filterAndRender();
             });
         }
 

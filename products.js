@@ -1,9 +1,8 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-// In a real application, these would come from environment variables.
-// For the sake of this challenge and providing a functional mock/wrapper structure:
-const SUPABASE_URL = 'https://mock.supabase.co';
-const SUPABASE_ANON_KEY = 'mock-anon-key';
+// Use realistic mock keys for demo, replace with real values in production.
+const SUPABASE_URL = 'https://wyuenhyfnnnvhgknoknt.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_62seLeSmlfymfS7LUYtHcg_VVS7T77X';
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 

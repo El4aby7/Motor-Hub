@@ -24,43 +24,60 @@
             }
         };
     </script>
+    <style>
+        /* Premium toggle button style */
+        .nav-toggle-btn {
+            background: #1a1812;
+            border: 1px solid rgba(242, 202, 80, 0.4);
+            color: #f2ca50;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            padding: 5px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .nav-toggle-btn:hover {
+            background: rgba(242, 202, 80, 0.1);
+            border-color: #f2ca50;
+            box-shadow: 0 0 10px rgba(242, 202, 80, 0.2);
+        }
+        .site-brand { text-decoration: none; cursor: pointer; }
+        html, body { overflow-x: hidden; max-width: 100vw; }
+    </style>
 </head>
 <body class="bg-background text-on-surface min-h-screen flex flex-col">
     <!-- TopNavBar -->
-    <nav class="fixed top-0 w-full z-50 bg-neutral-900/80 backdrop-blur-xl flex justify-between items-center px-6 md:px-12 py-6 shadow-2xl shadow-yellow-500/10">
-        <div class="text-2xl font-black tracking-tighter text-primary">MOTOR HUB</div>
+    <nav class="fixed top-0 w-full z-50 bg-neutral-900/80 backdrop-blur-xl flex justify-between items-center px-4 md:px-12 py-5 shadow-2xl shadow-yellow-500/10">
+        <a href="index.html" class="site-brand text-2xl font-black tracking-tighter text-primary hover:opacity-80 transition-opacity">MOTOR HUB</a>
 
         <!-- Desktop Nav -->
-        <div class="hidden md:flex gap-12 items-center">
-            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors" href="inventory.html" data-i18n="nav_inventory">Inventory</a>
-            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors" href="about.html" data-i18n="nav_financing">Financing</a>
-            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors" href="contact.html" data-i18n="nav_contact">Contact</a>
+        <div class="hidden md:flex gap-10 items-center">
+            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors text-sm" href="inventory.html" data-i18n="nav_inventory">Inventory</a>
+            <a class="font-manrope tracking-tight font-bold uppercase text-neutral-400 hover:text-white transition-colors text-sm" href="contact.html" data-i18n="nav_contact">Contact</a>
 
             <!-- Toggles -->
-            <button id="lang-toggle" class="text-xs uppercase tracking-widest text-primary border border-primary/30 px-3 py-1 hover:bg-white/5">AR</button>
-            <button id="currency-toggle" class="text-xs uppercase tracking-widest text-primary border border-primary/30 px-3 py-1 hover:bg-white/5" data-currency="USD">USD</button>
+            <button id="lang-toggle" class="nav-toggle-btn">AR</button>
+            <button id="currency-toggle" class="nav-toggle-btn" data-currency="USD">USD</button>
         </div>
 
-        <button class="hidden md:block font-manrope tracking-tight font-bold uppercase text-primary border border-primary/30 px-6 py-2 hover:bg-white/5 transition-all scale-95 duration-300" data-i18n="btn_book_concierge">
-            Book Concierge
-        </button>
-
         <!-- Mobile Menu Button -->
-        <button id="mobile-menu-btn" class="md:hidden text-primary">
+        <button id="mobile-menu-btn" class="md:hidden text-primary p-1">
             <span class="material-symbols-outlined">menu</span>
         </button>
     </nav>
 
     <!-- Mobile Drawer (Hidden by default) -->
-    <div id="mobile-drawer" class="fixed inset-0 bg-neutral-900/95 backdrop-blur-3xl z-40 translate-x-full transition-transform duration-300 flex flex-col pt-32 px-6 pb-12">
+    <div id="mobile-drawer" class="fixed inset-0 bg-neutral-900/95 backdrop-blur-3xl z-40 translate-x-full transition-transform duration-300 flex flex-col pt-28 px-6 pb-12">
         <a class="text-2xl font-bold uppercase text-white mb-6" href="inventory.html" data-i18n="nav_inventory">Inventory</a>
-        <a class="text-2xl font-bold uppercase text-white mb-6" href="about.html" data-i18n="nav_financing">Financing</a>
         <a class="text-2xl font-bold uppercase text-white mb-12" href="contact.html" data-i18n="nav_contact">Contact</a>
-        <button id="mobile-lang-toggle" class="text-lg uppercase text-primary mb-4 text-left">Switch to AR</button>
-        <button id="mobile-currency-toggle" class="text-lg uppercase text-primary text-left">Switch Currency</button>
+        <button id="mobile-lang-toggle" class="nav-toggle-btn text-left mb-4 w-fit">Switch to AR</button>
+        <button id="mobile-currency-toggle" class="nav-toggle-btn text-left w-fit">Switch Currency</button>
     </div>
 
-    <main class="pt-32 pb-24 px-6 md:px-12 max-w-[1600px] mx-auto w-full flex-grow">
+    <main class="pt-28 pb-24 px-4 md:px-12 max-w-[1600px] mx-auto w-full flex-grow">
         <header class="mb-16">
             <h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter leading-none mb-4 text-white">YOUR<br/><span class="text-primary">COLLECTION</span></h1>
             <p class="text-neutral-500 uppercase tracking-widest text-sm">Saved Vehicles</p>
@@ -76,6 +93,22 @@
         import { getVehicles } from './products.js';
 
         const grid = document.getElementById('favorites-grid');
+        let currentCurrency = localStorage.getItem('currency') || 'USD';
+        let exchangeRate = 50; // default
+        let allVehicles = [];
+
+        // Load exchange rate
+        try {
+            const { getSettings } = await import('./settings.js');
+            const settings = await getSettings().catch(() => ({}));
+            if (settings && settings.usd_to_egp_rate) exchangeRate = settings.usd_to_egp_rate;
+        } catch(e) {}
+
+        function formatPrice(usdPrice) {
+            if (!usdPrice) return 'Upon Request';
+            const price = currentCurrency === 'USD' ? usdPrice : usdPrice * exchangeRate;
+            return new Intl.NumberFormat('en-US', { style: 'currency', currency: currentCurrency, maximumFractionDigits: 0 }).format(price);
+        }
 
         async function init() {
             try {
@@ -86,8 +119,7 @@
                     return;
                 }
 
-                // In a real app we might fetch only specific IDs. Here we fetch all and filter.
-                const allVehicles = await getVehicles();
+                allVehicles = await getVehicles();
                 const favVehicles = allVehicles.filter(v => favIds.includes(v.id));
 
                 if (favVehicles.length === 0) {
@@ -134,7 +166,7 @@
                 const eName = escapeHTML(v.name);
                 const eImg = escapeHTML(v.image_url);
                 const eVersion = escapeHTML(v.version || 'Base');
-                const ePrice = v.price_usd ? '$' + v.price_usd.toLocaleString() : 'Request';
+                const ePrice = formatPrice(v.price_usd);
 
                 return `
                 <div class="group relative" id="fav-card-${eId}">
@@ -147,16 +179,23 @@
                         <span class="material-symbols-outlined">favorite</span>
                     </button>
 
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <h3 class="text-3xl font-bold tracking-tight uppercase text-white">${eName}</h3>
+                    <div class="flex justify-between items-start gap-3">
+                        <div class="min-w-0">
+                            <h3 class="text-3xl font-bold tracking-tight uppercase text-white truncate">${eName}</h3>
                             <p class="text-outline-variant text-sm uppercase tracking-widest mt-1">${eVersion}</p>
                         </div>
-                        <span class="text-2xl font-black text-primary">${escapeHTML(ePrice)}</span>
+                        <span class="text-xl font-black text-primary whitespace-nowrap fav-price-display" data-usd="${escapeHTML(String(v.price_usd || ''))}">${escapeHTML(ePrice)}</span>
                     </div>
                 </div>
             `}).join('');
         }
+
+        window._updateFavPrices = function() {
+            document.querySelectorAll('.fav-price-display').forEach(el => {
+                const usd = parseFloat(el.getAttribute('data-usd'));
+                el.textContent = formatPrice(usd);
+            });
+        };
 
         window.removeFav = function(id) {
             let favs = JSON.parse(localStorage.getItem('favorites') || '[]');
@@ -170,6 +209,10 @@
                 if (favs.length === 0) renderEmptyState();
             }
         };
+
+        window._setFavCurrency = function(c) {
+            currentCurrency = c;
+        }
 
         init();
     </script>
@@ -214,68 +257,18 @@
         }
 
         // ==== Global Logic ====
-        let currentLang = localStorage.getItem('lang') || 'en';
+        let currentLangG = localStorage.getItem('lang') || 'en';
         let currentCurrency = localStorage.getItem('currency') || 'USD';
-        let exchangeRate = 1;
-        let translations = {};
-
-        async function initGlobal() {
-            try {
-                // Fetch translations directly
-                const transRes = await fetch('translations.json').then(r => r.json());
-                translations = transRes;
-                applyLanguage();
-                if (typeof updateCurrencyDisplay === 'function') {
-                    updateCurrencyDisplay();
-                } else {
-                    const cToggle = document.getElementById('currency-toggle');
-                    if (cToggle) cToggle.textContent = currentCurrency;
-                }
-            } catch (err) {
-                console.error("Global init error:", err);
-            }
-        }
-
-        function applyLanguage() {
-            document.documentElement.lang = currentLang;
-            document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if (translations[currentLang] && translations[currentLang][key]) {
-                    el.textContent = translations[currentLang][key];
-                }
-            });
-            const lt = document.getElementById('lang-toggle');
-            if(lt) lt.textContent = currentLang === 'en' ? 'AR' : 'EN';
-            const mlt = document.getElementById('mobile-lang-toggle');
-            if(mlt) mlt.textContent = currentLang === 'en' ? 'Switch to AR' : 'Switch to EN';
-        }
-
-        const langToggleBtn = document.getElementById('lang-toggle');
-        if(langToggleBtn) {
-            langToggleBtn.addEventListener('click', () => {
-                currentLang = currentLang === 'en' ? 'ar' : 'en';
-                localStorage.setItem('lang', currentLang);
-                applyLanguage();
-            });
-        }
-
-        const mlangToggleBtn = document.getElementById('mobile-lang-toggle');
-        if(mlangToggleBtn) {
-            mlangToggleBtn.addEventListener('click', () => {
-                currentLang = currentLang === 'en' ? 'ar' : 'en';
-                localStorage.setItem('lang', currentLang);
-                applyLanguage();
-            });
-        }
 
         const currToggleBtn = document.getElementById('currency-toggle');
         if(currToggleBtn) {
+            currToggleBtn.textContent = currentCurrency;
             currToggleBtn.addEventListener('click', () => {
                 currentCurrency = currentCurrency === 'USD' ? 'EGP' : 'USD';
                 localStorage.setItem('currency', currentCurrency);
                 currToggleBtn.textContent = currentCurrency;
-                if (typeof updateCurrencyDisplay === 'function') updateCurrencyDisplay();
+                if (window._setFavCurrency) window._setFavCurrency(currentCurrency);
+                if (window._updateFavPrices) window._updateFavPrices();
             });
         }
 
@@ -284,11 +277,11 @@
             mcurrToggleBtn.addEventListener('click', () => {
                 currentCurrency = currentCurrency === 'USD' ? 'EGP' : 'USD';
                 localStorage.setItem('currency', currentCurrency);
-                if (typeof updateCurrencyDisplay === 'function') updateCurrencyDisplay();
+                if (currToggleBtn) currToggleBtn.textContent = currentCurrency;
+                if (window._setFavCurrency) window._setFavCurrency(currentCurrency);
+                if (window._updateFavPrices) window._updateFavPrices();
             });
         }
-
-        initGlobal();
 
 </script>
 </body>
