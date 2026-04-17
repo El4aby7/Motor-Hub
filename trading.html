@@ -41,7 +41,6 @@
         }
     </script>
 
-    <link rel="stylesheet" href="index.css">
     <style>
         /* Premium toggle button style */
         .nav-toggle-btn {
@@ -419,7 +418,7 @@
                 const uploadedUrls = [];
                 for (const [id, file] of filesToUpload.entries()) {
                     btnText.textContent = `Uploading ${uploadedUrls.length + 1} of ${filesToUpload.size}...`;
-                    const url = await uploadImage(file, 'vehicle-images', 'inquiries');
+                    const url = await uploadImage(file, 'uploads', 'inquiries');
                     uploadedUrls.push(url);
                 }
 
