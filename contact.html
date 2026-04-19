@@ -168,19 +168,19 @@
 
             <!-- Social Icons Row -->
             <div class="flex justify-center flex-wrap gap-4 pt-4">
-                <a href="#" class="social-icon-btn" title="Instagram">
+                <a href="#" id="contact-inst" class="social-icon-btn hidden" target="_blank" title="Instagram">
                     <i class="fa-brands fa-instagram"></i>
                 </a>
-                <a href="#" class="social-icon-btn" title="Facebook">
+                <a href="#" id="contact-fb" class="social-icon-btn hidden" target="_blank" title="Facebook">
                     <i class="fa-brands fa-facebook-f"></i>
                 </a>
-                <a href="#" class="social-icon-btn" title="TikTok">
+                <a href="#" id="contact-tk" class="social-icon-btn hidden" target="_blank" title="TikTok">
                     <i class="fa-brands fa-tiktok"></i>
                 </a>
-                <a href="https://wa.me/123456789" class="social-icon-btn" title="WhatsApp">
+                <a href="#" id="contact-wa" class="social-icon-btn hidden" target="_blank" title="WhatsApp">
                     <i class="fa-brands fa-whatsapp"></i>
                 </a>
-                <a href="tel:+123456789" class="social-icon-btn" title="Call Us">
+                <a href="#" id="contact-ph" class="social-icon-btn hidden" title="Call Us">
                     <i class="fa-solid fa-phone"></i>
                 </a>
             </div>
@@ -195,13 +195,46 @@
             const fallbackUrl = "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2483.080512877395!2d-0.1466031842298642!3d51.51174627963625!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x487604d502268421%3A0x6a7d62889992f993!2sMayfair%2C%20London!5e0!3m2!1sen!2suk!4v1620000000000!5m2!1sen!2suk";
             try {
                 const settings = await getSettings();
+
+                // Set Map URL
                 if (settings && settings.map_embed_url) {
                     document.getElementById('map-iframe').src = settings.map_embed_url;
                 } else {
                     document.getElementById('map-iframe').src = fallbackUrl;
                 }
+
+                // Set Social Links
+                if (settings) {
+                    if (settings.instagram_link) {
+                        const el = document.getElementById('contact-inst');
+                        el.href = settings.instagram_link;
+                        el.classList.remove('hidden');
+                    }
+                    if (settings.facebook_link) {
+                        const el = document.getElementById('contact-fb');
+                        el.href = settings.facebook_link;
+                        el.classList.remove('hidden');
+                    }
+                    if (settings.tiktok_link) {
+                        const el = document.getElementById('contact-tk');
+                        el.href = settings.tiktok_link;
+                        el.classList.remove('hidden');
+                    }
+                    if (settings.whatsapp_number) {
+                        const el = document.getElementById('contact-wa');
+                        // Clean number for wa.me link
+                        const waNum = settings.whatsapp_number.replace(/[^0-9]/g, '');
+                        el.href = `https://wa.me/${waNum}`;
+                        el.classList.remove('hidden');
+                    }
+                    if (settings.phone_number) {
+                        const el = document.getElementById('contact-ph');
+                        el.href = `tel:${settings.phone_number}`;
+                        el.classList.remove('hidden');
+                    }
+                }
             } catch (err) {
-                console.error("Failed to load map url, using fallback", err);
+                console.error("Failed to load settings, using fallback", err);
                 document.getElementById('map-iframe').src = fallbackUrl;
             }
         }
