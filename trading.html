@@ -26,11 +26,14 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: '#b89a61',
-                        surface: '#0a0a0a',
-                        'surface-container': '#141414',
-                        'surface-container-low': '#1c1c1c',
-                        'outline-variant': '#333333'
+                        primary: "#f2ca50",
+                        "primary-container": "#d4af37",
+                        background: "#131313",
+                        surface: "#131313",
+                        "on-surface": "#e5e2e1",
+                        "surface-container": "#141414",
+                        "surface-container-low": "#1c1b1b",
+                        "outline-variant": "#4d4635"
                     },
                     fontFamily: {
                         manrope: ['Manrope', 'sans-serif'],
@@ -106,9 +109,9 @@
     <!-- Main Content -->
     <main class="flex-grow pt-32 pb-24 px-6 md:px-12 max-w-[1200px] mx-auto w-full">
         <div class="mb-12">
-            <span class="text-primary tracking-[0.2em] font-bold text-xs uppercase block mb-4">Vehicle Evaluation</span>
-            <h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter leading-none mb-6">SELL OR <span class="text-neutral-500">TRADE</span></h1>
-            <p class="text-neutral-400 max-w-2xl leading-relaxed">Whether you are looking to secure a competitive offer for your luxury vehicle or utilize it as a trade-in towards your next premier acquisition, our team ensures a seamless and transparent appraisal process. <br><br> <span class="text-primary/90 font-bold">(A team will come from the dealership for free to check the car and give its pricing in a professional way)</span></p>
+            <span class="text-primary tracking-[0.2em] font-bold text-xs uppercase block mb-4" data-i18n="trade_eval_title">Vehicle Evaluation</span>
+            <h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter leading-none mb-6" data-i18n="trade_sell_or_trade">SELL OR <span class="text-neutral-500" data-i18n="trade_trade">TRADE</span></h1>
+            <p class="text-neutral-400 max-w-2xl leading-relaxed" data-i18n="trade_desc">Whether you are looking to secure a competitive offer for your luxury vehicle or utilize it as a trade-in towards your next premier acquisition, our team ensures a seamless and transparent appraisal process. <br><br> <span class="text-primary/90 font-bold" data-i18n="trade_desc_bold">(A team will come from the dealership for free to check the car and give its pricing in a professional way)</span></p>
         </div>
 
         <form id="trading-form" class="bg-surface-container border border-outline-variant rounded-sm p-8 md:p-12 mb-12">
@@ -120,83 +123,83 @@
                     <div class="w-5 h-5 rounded-full border-2 border-outline-variant peer-checked:border-primary flex items-center justify-center transition-colors">
                         <div class="w-2.5 h-2.5 rounded-full bg-primary opacity-0 peer-checked:opacity-100 transition-opacity"></div>
                     </div>
-                    <span class="text-white font-bold uppercase tracking-widest text-sm group-hover:text-primary transition-colors">Trade-In</span>
+                    <span class="text-white font-bold uppercase tracking-widest text-sm group-hover:text-primary transition-colors" data-i18n="form_trade_in">Trade-In</span>
                 </label>
                 <label class="flex items-center gap-2 cursor-pointer group">
                     <input type="radio" name="request_type" value="sell" class="peer sr-only" />
                     <div class="w-5 h-5 rounded-full border-2 border-outline-variant peer-checked:border-primary flex items-center justify-center transition-colors">
                         <div class="w-2.5 h-2.5 rounded-full bg-primary opacity-0 peer-checked:opacity-100 transition-opacity"></div>
                     </div>
-                    <span class="text-white font-bold uppercase tracking-widest text-sm group-hover:text-primary transition-colors">Sell Vehicle</span>
+                    <span class="text-white font-bold uppercase tracking-widest text-sm group-hover:text-primary transition-colors" data-i18n="form_sell_vehicle">Sell Vehicle</span>
                 </label>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                 <!-- Personal Info -->
                 <div class="space-y-6">
-                    <h3 class="text-white font-bold uppercase tracking-widest border-b border-outline-variant pb-2 mb-4">Personal Information</h3>
+                    <h3 class="text-white font-bold uppercase tracking-widest border-b border-outline-variant pb-2 mb-4" data-i18n="form_personal_info">Personal Information</h3>
                     <div>
                         <label class="block text-[11px] text-neutral-400 uppercase tracking-widest font-bold mb-2">Full Name</label>
-                        <input id="f-name" type="text" required class="w-full bg-surface-container-low border border-outline-variant focus:border-primary text-white p-4 text-sm transition-colors" placeholder="John Doe" />
+                        <input id="f-name" type="text" required class="w-full bg-surface-container-low border border-outline-variant focus:border-primary text-white p-4 text-sm transition-colors" placeholder="John Doe" data-i18n="form_placeholder_name" />
                     </div>
                     <div>
                         <label class="block text-[11px] text-neutral-400 uppercase tracking-widest font-bold mb-2">Email Address</label>
-                        <input id="f-email" type="email" required class="w-full bg-surface-container-low border border-outline-variant focus:border-primary text-white p-4 text-sm transition-colors" placeholder="john@example.com" />
+                        <input id="f-email" type="email" required class="w-full bg-surface-container-low border border-outline-variant focus:border-primary text-white p-4 text-sm transition-colors" placeholder="john@example.com" data-i18n="form_placeholder_email" />
                     </div>
                     <div>
                         <label class="block text-[11px] text-neutral-400 uppercase tracking-widest font-bold mb-2">Phone Number</label>
-                        <input id="f-phone" type="tel" required class="w-full bg-surface-container-low border border-outline-variant focus:border-primary text-white p-4 text-sm transition-colors" placeholder="+20 123 456 7890" />
+                        <input id="f-phone" type="tel" required class="w-full bg-surface-container-low border border-outline-variant focus:border-primary text-white p-4 text-sm transition-colors" placeholder="+20 123 456 7890" data-i18n="form_placeholder_phone" />
                     </div>
                     <div>
-                        <label class="block text-[11px] text-neutral-400 uppercase tracking-widest font-bold mb-2">Location (Pin on map or type)</label>
+                        <label class="block text-[11px] text-neutral-400 uppercase tracking-widest font-bold mb-2" data-i18n="form_location_label">Location (Pin on map or type)</label>
                         <div id="location-map" class="w-full h-48 bg-surface-container-low border border-outline-variant rounded relative z-10 mb-2"></div>
-                        <input id="f-location" type="text" required class="w-full bg-surface-container-low border border-outline-variant focus:border-primary text-white p-4 text-sm transition-colors" placeholder="Selected Coordinates or your Address..." />
+                        <input id="f-location" type="text" required class="w-full bg-surface-container-low border border-outline-variant focus:border-primary text-white p-4 text-sm transition-colors" placeholder="Selected Coordinates or your Address..." data-i18n="form_placeholder_location" />
                     </div>
                 </div>
 
                 <!-- Vehicle Info -->
                 <div class="space-y-6">
-                    <h3 class="text-white font-bold uppercase tracking-widest border-b border-outline-variant pb-2 mb-4">Vehicle Details</h3>
+                    <h3 class="text-white font-bold uppercase tracking-widest border-b border-outline-variant pb-2 mb-4" data-i18n="form_vehicle_details">Vehicle Details</h3>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-[11px] text-neutral-400 uppercase tracking-widest font-bold mb-2">Make</label>
-                            <input id="f-make" type="text" required class="w-full bg-surface-container-low border border-outline-variant focus:border-primary text-white p-4 text-sm transition-colors" placeholder="Mercedes-Benz" />
+                            <label class="block text-[11px] text-neutral-400 uppercase tracking-widest font-bold mb-2" data-i18n="form_make">Make</label>
+                            <input id="f-make" type="text" required class="w-full bg-surface-container-low border border-outline-variant focus:border-primary text-white p-4 text-sm transition-colors" placeholder="Mercedes-Benz" data-i18n="form_placeholder_make" />
                         </div>
                         <div>
-                            <label class="block text-[11px] text-neutral-400 uppercase tracking-widest font-bold mb-2">Model</label>
-                            <input id="f-model" type="text" required class="w-full bg-surface-container-low border border-outline-variant focus:border-primary text-white p-4 text-sm transition-colors" placeholder="G63 AMG" />
+                            <label class="block text-[11px] text-neutral-400 uppercase tracking-widest font-bold mb-2" data-i18n="form_model">Model</label>
+                            <input id="f-model" type="text" required class="w-full bg-surface-container-low border border-outline-variant focus:border-primary text-white p-4 text-sm transition-colors" placeholder="G63 AMG" data-i18n="form_placeholder_model" />
                         </div>
                         <div>
-                            <label class="block text-[11px] text-neutral-400 uppercase tracking-widest font-bold mb-2">Year</label>
-                            <input id="f-year" type="number" required class="w-full bg-surface-container-low border border-outline-variant focus:border-primary text-white p-4 text-sm transition-colors" placeholder="2023" />
+                            <label class="block text-[11px] text-neutral-400 uppercase tracking-widest font-bold mb-2" data-i18n="form_year">Year</label>
+                            <input id="f-year" type="number" required class="w-full bg-surface-container-low border border-outline-variant focus:border-primary text-white p-4 text-sm transition-colors" placeholder="2023" data-i18n="form_placeholder_year" />
                         </div>
                         <div>
-                            <label class="block text-[11px] text-neutral-400 uppercase tracking-widest font-bold mb-2">Mileage</label>
-                            <input id="f-mileage" type="text" required class="w-full bg-surface-container-low border border-outline-variant focus:border-primary text-white p-4 text-sm transition-colors" placeholder="15,000 KM" />
+                            <label class="block text-[11px] text-neutral-400 uppercase tracking-widest font-bold mb-2" data-i18n="form_mileage">Mileage</label>
+                            <input id="f-mileage" type="text" required class="w-full bg-surface-container-low border border-outline-variant focus:border-primary text-white p-4 text-sm transition-colors" placeholder="15,000 KM" data-i18n="form_placeholder_mileage" />
                         </div>
                     </div>
                     <div>
-                        <label class="block text-[11px] text-neutral-400 uppercase tracking-widest font-bold mb-2">Specs & Additional Notes</label>
-                        <textarea id="f-specs" rows="3" class="w-full bg-surface-container-low border border-outline-variant focus:border-primary text-white p-4 text-sm transition-colors resize-none" placeholder="Exterior color, interior options, specific features..."></textarea>
+                        <label class="block text-[11px] text-neutral-400 uppercase tracking-widest font-bold mb-2" data-i18n="form_specs">Specs & Additional Notes</label>
+                        <textarea id="f-specs" rows="3" class="w-full bg-surface-container-low border border-outline-variant focus:border-primary text-white p-4 text-sm transition-colors resize-none" placeholder="Exterior color, interior options, specific features..." data-i18n="form_placeholder_specs"></textarea>
                     </div>
                 </div>
             </div>
 
             <!-- Image Upload -->
             <div class="mb-10">
-                <h3 class="text-white font-bold uppercase tracking-widest border-b border-outline-variant pb-2 mb-4">Upload Photos</h3>
-                <p class="text-xs text-neutral-500 mb-4 tracking-wide">Please attach exterior and interior photos of the vehicle.</p>
+                <h3 class="text-white font-bold uppercase tracking-widest border-b border-outline-variant pb-2 mb-4" data-i18n="form_upload_photos">Upload Photos</h3>
+                <p class="text-xs text-neutral-500 mb-4 tracking-wide" data-i18n="form_upload_subhint">Please attach exterior and interior photos of the vehicle.</p>
                 <div class="relative border-2 border-dashed border-outline-variant hover:border-primary bg-surface-container-low transition-colors p-8 text-center group">
                     <input id="f-photos" type="file" multiple accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
                     <span class="material-symbols-outlined text-4xl text-neutral-600 group-hover:text-primary mb-2 transition-colors block">add_a_photo</span>
-                    <span class="text-sm font-bold uppercase tracking-widest text-neutral-400 group-hover:text-white transition-colors">Click or Drag & Drop to Upload Images</span>
+                    <span class="text-sm font-bold uppercase tracking-widest text-neutral-400 group-hover:text-white transition-colors" data-i18n="form_upload_hint">Click or Drag & Drop to Upload Images</span>
                 </div>
                 <!-- Preview Grid -->
                 <div id="photo-preview" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-4 mt-6"></div>
             </div>
 
             <button type="submit" id="submit-btn" class="w-full bg-primary hover:bg-white text-surface hover:text-surface font-extrabold uppercase tracking-[0.2em] py-5 px-8 transition-colors flex justify-center items-center gap-2">
-                <span id="btn-text">Submit Request</span>
+                <span id="btn-text" data-i18n="form_submit_req">Submit Request</span>
                 <span class="material-symbols-outlined" id="btn-icon">arrow_forward</span>
             </button>
 
@@ -234,19 +237,28 @@
         }
 
         function applyLanguage() {
+            document.documentElement.lang = currentLang;
+            document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 if (translations[currentLang] && translations[currentLang][key]) {
-                    el.textContent = translations[currentLang][key];
+                    if (el.hasAttribute('placeholder')) {
+                        el.placeholder = translations[currentLang][key];
+                    } else if (el.tagName === 'OPTION') {
+                        el.text = translations[currentLang][key];
+                    } else {
+                        if (translations[currentLang][key].includes('<')) {
+                             el.innerHTML = translations[currentLang][key];
+                        } else {
+                             el.textContent = translations[currentLang][key];
+                        }
+                    }
                 }
             });
-            document.documentElement.lang = currentLang;
-            document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
-            
-            const btn = document.getElementById('lang-toggle');
-            if (btn) btn.textContent = currentLang === 'en' ? 'AR' : 'EN';
-            const mbtn = document.getElementById('mobile-lang-toggle');
-            if (mbtn) mbtn.textContent = currentLang === 'en' ? 'Switch to AR' : 'Switch to EN';
+            const lt = document.getElementById('lang-toggle');
+            if(lt) lt.textContent = currentLang === 'en' ? 'AR' : 'EN';
+            const mlt = document.getElementById('mobile-lang-toggle');
+            if(mlt) mlt.textContent = currentLang === 'en' ? 'Switch to AR' : 'Switch to EN';
         }
 
         function updateCurrencyDisplay() {
@@ -301,6 +313,17 @@
             const gmapsLink = `https://www.google.com/maps?q=${lat},${lng}`;
             document.getElementById('f-location').value = gmapsLink;
         });
+
+
+        // FAB
+        const fabBtn = document.getElementById('fab-btn');
+        const fabPopup = document.getElementById('fab-popup');
+        if (fabBtn && fabPopup) {
+            fabBtn.addEventListener('click', () => {
+                fabPopup.classList.toggle('hidden');
+                fabPopup.classList.toggle('flex');
+            });
+        }
 
         // Toggles
         document.getElementById('lang-toggle')?.addEventListener('click', () => {

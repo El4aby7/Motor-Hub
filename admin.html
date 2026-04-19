@@ -24,6 +24,7 @@
             }
         };
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 </head>
 <body class="bg-background text-on-surface min-h-screen flex flex-col">
 
@@ -82,9 +83,9 @@
                 <button class="nav-tab text-left px-4 py-3 rounded uppercase text-xs tracking-widest text-primary font-bold bg-white/5" data-target="tab-products">Products</button>
                 <button class="nav-tab text-left px-4 py-3 rounded uppercase text-xs tracking-widest text-neutral-400 font-bold hover:bg-white/5 hover:text-white transition-colors" data-target="tab-brands">Brands</button>
                 <button class="nav-tab text-left px-4 py-3 rounded uppercase text-xs tracking-widest text-neutral-400 font-bold hover:bg-white/5 hover:text-white transition-colors" data-target="tab-categories">Categories</button>
-                <button class="nav-tab text-left px-4 py-3 rounded uppercase text-xs tracking-widest text-neutral-400 font-bold hover:bg-white/5 hover:text-white transition-colors" data-target="tab-inquiries">Inquiries</button>
-                <button class="nav-tab text-left px-4 py-3 rounded uppercase text-xs tracking-widest text-neutral-400 font-bold hover:bg-white/5 hover:text-white transition-colors" data-target="tab-gallery">Gallery</button>
-                <button class="nav-tab text-left px-4 py-3 rounded uppercase text-xs tracking-widest text-neutral-400 font-bold hover:bg-white/5 hover:text-white transition-colors" data-target="tab-settings">Settings</button>
+                <button class="nav-tab text-left px-4 py-3 rounded uppercase text-xs tracking-widest text-neutral-400 font-bold hover:bg-white/5 hover:text-white transition-colors" data-target="tab-inquiries" data-i18n="admin_inquiries">Inquiries</button>
+                <button class="nav-tab text-left px-4 py-3 rounded uppercase text-xs tracking-widest text-neutral-400 font-bold hover:bg-white/5 hover:text-white transition-colors" data-target="tab-gallery" data-i18n="admin_gallery">Gallery</button>
+                <button class="nav-tab text-left px-4 py-3 rounded uppercase text-xs tracking-widest text-neutral-400 font-bold hover:bg-white/5 hover:text-white transition-colors" data-target="tab-settings" data-i18n="admin_settings">Settings</button>
             </nav>
         </aside>
 
@@ -161,11 +162,11 @@
                 <!-- Main Gallery -->
                 <div class="mb-12 border border-outline-variant rounded p-6">
                     <div class="flex justify-between items-center mb-4 border-b border-outline-variant pb-4">
-                        <h3 class="text-lg font-bold uppercase tracking-widest text-primary">Main Gallery</h3>
+                        <h3 class="text-lg font-bold uppercase tracking-widest text-primary" data-i18n="admin_main_gallery">Main Gallery</h3>
                         <div class="flex items-center gap-4 bg-[#1c1b1b] border border-[#2b2a2a] rounded p-2">
                             <input type="file" id="upload-main-gallery" class="hidden" accept="image/*" multiple/>
-                            <button type="button" class="bg-surface-container-low border border-outline-variant text-white font-bold text-xs py-2 px-6 rounded-full hover:bg-white/5" onclick="document.getElementById('upload-main-gallery').click()">Select Images</button>
-                            <button type="button" id="btn-save-main-gallery" class="bg-primary text-black font-bold text-xs py-2 px-6 rounded-full">Save Gallery</button>
+                            <button type="button" class="bg-surface-container-low border border-outline-variant text-white font-bold text-xs py-2 px-6 rounded-full hover:bg-white/5" onclick="document.getElementById('upload-main-gallery').click()" data-i18n="admin_select_images">Select Images</button>
+                            <button type="button" id="btn-save-main-gallery" class="bg-primary text-black font-bold text-xs py-2 px-6 rounded-full" data-i18n="admin_save_gallery">Save Gallery</button>
                         </div>
                     </div>
                     <div id="main-gallery-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
@@ -176,11 +177,11 @@
                 <!-- Satisfied Clients -->
                 <div class="border border-outline-variant rounded p-6">
                     <div class="flex justify-between items-center mb-4 border-b border-outline-variant pb-4">
-                        <h3 class="text-lg font-bold uppercase tracking-widest text-primary">Satisfied Clients</h3>
+                        <h3 class="text-lg font-bold uppercase tracking-widest text-primary" data-i18n="admin_satisfied_clients">Satisfied Clients</h3>
                         <div class="flex items-center gap-4 bg-[#1c1b1b] border border-[#2b2a2a] rounded p-2">
                             <input type="file" id="upload-client-gallery" class="hidden" accept="image/*" multiple/>
-                            <button type="button" class="bg-surface-container-low border border-outline-variant text-white font-bold text-xs py-2 px-6 rounded-full hover:bg-white/5" onclick="document.getElementById('upload-client-gallery').click()">Select Images</button>
-                            <button type="button" id="btn-save-client-gallery" class="bg-primary text-black font-bold text-xs py-2 px-6 rounded-full">Save Gallery</button>
+                            <button type="button" class="bg-surface-container-low border border-outline-variant text-white font-bold text-xs py-2 px-6 rounded-full hover:bg-white/5" onclick="document.getElementById('upload-client-gallery').click()" data-i18n="admin_select_images">Select Images</button>
+                            <button type="button" id="btn-save-client-gallery" class="bg-primary text-black font-bold text-xs py-2 px-6 rounded-full" data-i18n="admin_save_gallery">Save Gallery</button>
                         </div>
                     </div>
                     <div id="client-gallery-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
@@ -225,7 +226,7 @@
                         <h3 class="text-[10px] font-bold text-primary uppercase tracking-widest border-b border-outline-variant pb-2">Currency Exchange</h3>
                         <div>
                             <label class="block text-[11px] text-neutral-400 mb-2">1 USD to EGP Rate</label>
-                            <input id="set-rate" type="number" step="0.01" class="w-full bg-[#131313] border border-outline-variant focus:border-primary text-white rounded p-3 text-sm" placeholder="e.g. 50.0" />
+                            <input id="set-rate" type="number" step="0.01" class="w-full bg-[#131313] border border-outline-variant focus:border-primary text-white rounded p-3 text-sm" placeholder="e.g. 50.0" data-i18n="admin_placeholder_rate" />
                         </div>
                     </div>
 
@@ -249,11 +250,11 @@
                         <h3 class="text-[10px] font-bold text-primary uppercase tracking-widest border-b border-outline-variant pb-2">Location & Map</h3>
                         <div>
                             <label class="block text-[11px] text-neutral-400 mb-2">Google Maps Embed URL (or Iframe code)</label>
-                            <input id="set-map" type="text" class="w-full bg-[#131313] border border-outline-variant focus:border-primary text-white rounded p-3 text-sm font-mono" placeholder='<iframe src="...">' />
+                            <input id="set-map" type="text" class="w-full bg-[#131313] border border-outline-variant focus:border-primary text-white rounded p-3 text-sm font-mono" placeholder='<iframe src="...">' data-i18n="admin_placeholder_map" />
                         </div>
                         <div>
                             <label class="block text-[11px] text-neutral-400 mb-2">Location Pin Link (Google Maps Share Link)</label>
-                            <input id="set-pin" type="url" class="w-full bg-[#131313] border border-outline-variant focus:border-primary text-white rounded p-3 text-sm" placeholder="https://maps.app.goo.gl/..." />
+                            <input id="set-pin" type="url" class="w-full bg-[#131313] border border-outline-variant focus:border-primary text-white rounded p-3 text-sm" placeholder="https://maps.app.goo.gl/..." data-i18n="admin_placeholder_pin" />
                         </div>
                     </div>
 
@@ -276,11 +277,11 @@
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-[11px] text-neutral-400 mb-2 uppercase font-bold tracking-widest">WhatsApp Number</label>
-                                <input id="set-wa" type="tel" class="w-full bg-[#131313] border border-outline-variant focus:border-primary text-white rounded p-3 text-sm" placeholder="+123456789" />
+                                <input id="set-wa" type="tel" class="w-full bg-[#131313] border border-outline-variant focus:border-primary text-white rounded p-3 text-sm" placeholder="+123456789" data-i18n="admin_placeholder_phone" />
                             </div>
                             <div>
                                 <label class="block text-[11px] text-neutral-400 mb-2 uppercase font-bold tracking-widest">Phone Number</label>
-                                <input id="set-ph" type="tel" class="w-full bg-[#131313] border border-outline-variant focus:border-primary text-white rounded p-3 text-sm" placeholder="+123456789" />
+                                <input id="set-ph" type="tel" class="w-full bg-[#131313] border border-outline-variant focus:border-primary text-white rounded p-3 text-sm" placeholder="+123456789" data-i18n="admin_placeholder_phone" />
                             </div>
                         </div>
                     </div>
@@ -302,7 +303,7 @@
         import { getMessages, markMessageRead, markMessageUnread, deleteMessage } from './messages.js';
         import { getSettings, updateSettings, subscribeToSettings } from './settings.js';
         import { uploadImage } from './storage.js';
-        import { getGalleryImages, createGalleryImage, deleteGalleryImage, getClientImages, createClientImage, deleteClientImage } from './gallery.js';
+        import { getGalleryImages, createGalleryImage, updateGalleryImage, deleteGalleryImage, getClientImages, createClientImage, updateClientImage, deleteClientImage } from './gallery.js';
 
         const loginView = document.getElementById('login-view');
         const dashboardView = document.getElementById('dashboard-view');
@@ -1162,14 +1163,14 @@
             }
 
             let html = images.map(img => `
-                <div class="relative group aspect-square rounded overflow-hidden border border-outline-variant">
+                <div data-id="${img.id}" class="relative group aspect-square rounded overflow-hidden border border-outline-variant">
                     <img src="${escapeHTML(img.image_url)}" class="w-full h-full object-cover" />
                     <button type="button" class="absolute top-2 right-2 bg-black/80 text-red-500 rounded p-1.5 hidden group-hover:block z-10 hover:text-red-400" onclick="window.queueDelMainGallery('${escapeHTML(img.id)}')"><span class="material-symbols-outlined text-[14px]">delete</span></button>
                 </div>
             `).join('');
 
             html += newFiles.map((file, idx) => `
-                <div class="relative group aspect-square rounded overflow-hidden border border-primary/50 opacity-70">
+                <div data-idx="${idx}" class="relative group aspect-square rounded overflow-hidden border border-primary/50 opacity-70">
                     <img src="${URL.createObjectURL(file)}" class="w-full h-full object-cover" />
                     <span class="absolute bottom-1 left-1 text-[8px] bg-black px-1 rounded text-primary uppercase font-bold tracking-widest z-10">Pending</span>
                     <button type="button" class="absolute top-2 right-2 bg-black/80 text-red-500 rounded p-1.5 hidden group-hover:block z-10 hover:text-red-400" onclick="window.removePendingMainGallery(${idx})"><span class="material-symbols-outlined text-[14px]">close</span></button>
@@ -1177,6 +1178,10 @@
             `).join('');
 
             grid.innerHTML = html;
+            setTimeout(() => {
+                if (window.mainGallerySortable) window.mainGallerySortable.destroy();
+                window.mainGallerySortable = Sortable.create(grid, { animation: 150 });
+            }, 100);
         }
 
         function renderClientGallery() {
@@ -1190,14 +1195,14 @@
             }
 
             let html = images.map(img => `
-                <div class="relative group aspect-square rounded overflow-hidden border border-outline-variant">
+                <div data-id="${img.id}" class="relative group aspect-square rounded overflow-hidden border border-outline-variant">
                     <img src="${escapeHTML(img.image_url)}" class="w-full h-full object-cover" />
                     <button type="button" class="absolute top-2 right-2 bg-black/80 text-red-500 rounded p-1.5 hidden group-hover:block z-10 hover:text-red-400" onclick="window.queueDelClientGallery('${escapeHTML(img.id)}')"><span class="material-symbols-outlined text-[14px]">delete</span></button>
                 </div>
             `).join('');
 
             html += newFiles.map((file, idx) => `
-                <div class="relative group aspect-square rounded overflow-hidden border border-primary/50 opacity-70">
+                <div data-idx="${idx}" class="relative group aspect-square rounded overflow-hidden border border-primary/50 opacity-70">
                     <img src="${URL.createObjectURL(file)}" class="w-full h-full object-cover" />
                     <span class="absolute bottom-1 left-1 text-[8px] bg-black px-1 rounded text-primary uppercase font-bold tracking-widest z-10">Pending</span>
                     <button type="button" class="absolute top-2 right-2 bg-black/80 text-red-500 rounded p-1.5 hidden group-hover:block z-10 hover:text-red-400" onclick="window.removePendingClientGallery(${idx})"><span class="material-symbols-outlined text-[14px]">close</span></button>
@@ -1205,6 +1210,10 @@
             `).join('');
 
             grid.innerHTML = html;
+            setTimeout(() => {
+                if (window.clientGallerySortable) window.clientGallerySortable.destroy();
+                window.clientGallerySortable = Sortable.create(grid, { animation: 150 });
+            }, 100);
         }
 
         window.queueDelMainGallery = function(id) {
@@ -1252,18 +1261,35 @@
             btn.disabled = true;
 
             try {
-                // Perform deletions
+                const grid = document.getElementById('main-gallery-grid');
+                const children = Array.from(grid.children);
+                let orderIdx = 0;
+
+                const orderedUpdates = [];
+
+                for (let child of children) {
+                    const id = child.getAttribute('data-id');
+                    if (id && id !== "undefined") {
+                        orderedUpdates.push({ type: 'existing', id: id, order_index: orderIdx++ });
+                    } else if (child.getAttribute('data-idx')) {
+                        const idx = parseInt(child.getAttribute('data-idx'));
+                        orderedUpdates.push({ type: 'new', file: galleryState.main.filesToUpload[idx], order_index: orderIdx++ });
+                    }
+                }
+
                 for (let id of galleryState.main.idsToDelete) {
                     await deleteGalleryImage(id);
                 }
 
-                // Perform uploads and creations
-                for (let file of galleryState.main.filesToUpload) {
-                    const url = await uploadImage(file, 'gallery-images');
-                    await createGalleryImage({ image_url: url });
+                for (let update of orderedUpdates) {
+                    if (update.type === 'existing') {
+                        await updateGalleryImage(update.id, { order_index: update.order_index });
+                    } else if (update.type === 'new') {
+                        const url = await uploadImage(update.file, 'gallery-images');
+                        await createGalleryImage({ image_url: url, order_index: update.order_index });
+                    }
                 }
 
-                // Refresh state from DB
                 galleryState.main.current = await getGalleryImages();
                 galleryState.main.filesToUpload = [];
                 galleryState.main.idsToDelete = [];
@@ -1284,18 +1310,35 @@
             btn.disabled = true;
 
             try {
-                // Perform deletions
+                const grid = document.getElementById('client-gallery-grid');
+                const children = Array.from(grid.children);
+                let orderIdx = 0;
+
+                const orderedUpdates = [];
+
+                for (let child of children) {
+                    const id = child.getAttribute('data-id');
+                    if (id && id !== "undefined") {
+                        orderedUpdates.push({ type: 'existing', id: id, order_index: orderIdx++ });
+                    } else if (child.getAttribute('data-idx')) {
+                        const idx = parseInt(child.getAttribute('data-idx'));
+                        orderedUpdates.push({ type: 'new', file: galleryState.client.filesToUpload[idx], order_index: orderIdx++ });
+                    }
+                }
+
                 for (let id of galleryState.client.idsToDelete) {
                     await deleteClientImage(id);
                 }
 
-                // Perform uploads and creations
-                for (let file of galleryState.client.filesToUpload) {
-                    const url = await uploadImage(file, 'client-images');
-                    await createClientImage({ image_url: url });
+                for (let update of orderedUpdates) {
+                    if (update.type === 'existing') {
+                        await updateClientImage(update.id, { order_index: update.order_index });
+                    } else if (update.type === 'new') {
+                        const url = await uploadImage(update.file, 'gallery-images');
+                        await createClientImage({ image_url: url, order_index: update.order_index });
+                    }
                 }
 
-                // Refresh state from DB
                 galleryState.client.current = await getClientImages();
                 galleryState.client.filesToUpload = [];
                 galleryState.client.idsToDelete = [];
@@ -1346,5 +1389,42 @@
             }
         });
     </script>
+
+    <!-- Translation Script -->
+    <script>
+        let currentLang = localStorage.getItem('lang') || 'en';
+        let translations = {};
+
+        async function initAdminTranslations() {
+            try {
+                translations = await fetch('translations.json').then(r => r.json());
+                applyAdminLanguage();
+            } catch(e) { console.error(e); }
+        }
+
+        function applyAdminLanguage() {
+            document.documentElement.lang = currentLang;
+            document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[currentLang] && translations[currentLang][key]) {
+                    if (el.hasAttribute('placeholder')) {
+                        el.placeholder = translations[currentLang][key];
+                    } else if (el.tagName === 'OPTION') {
+                        el.text = translations[currentLang][key];
+                    } else {
+                        if (translations[currentLang][key].includes('<')) {
+                             el.innerHTML = translations[currentLang][key];
+                        } else {
+                             el.textContent = translations[currentLang][key];
+                        }
+                    }
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', initAdminTranslations);
+    </script>
 </body>
+
 </html>

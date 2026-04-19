@@ -117,7 +117,7 @@
         <!-- Left: Form -->
         <div class="lg:col-span-7 flex flex-col gap-12">
             <header>
-                <div class="uppercase tracking-[0.2em] text-primary mb-4 text-xs font-bold">Inquiries & Access</div>
+                <div class="uppercase tracking-[0.2em] text-primary mb-4 text-xs font-bold" data-i18n="contact_inquiries_access">Inquiries & Access</div>
                 <h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter mb-6 text-white" data-i18n="home_title">CONNECT WITH ELITE</h1>
             </header>
 
@@ -147,7 +147,7 @@
                     <button type="submit" class="w-full gold-gradient text-neutral-900 font-bold uppercase tracking-widest py-5 flex items-center justify-center gap-3 hover:brightness-110 transition-all">
                         Initiate Inquiry <span class="material-symbols-outlined">arrow_forward</span>
                     </button>
-                    <p id="toast" class="text-green-500 text-sm hidden">Inquiry submitted successfully. We will contact you shortly.</p>
+                    <p id="toast" class="text-green-500 text-sm hidden" data-i18n="contact_success">Inquiry submitted successfully. We will contact you shortly.</p>
                 </form>
             </section>
         </div>
@@ -162,7 +162,7 @@
                     style="border:0;" allowfullscreen="" loading="lazy">
                 </iframe>
                 <div class="absolute bottom-0 left-0 w-full p-6 bg-gradient-to-t from-black to-transparent pointer-events-none">
-                    <span class="text-xs uppercase tracking-widest text-primary font-bold">Flagship Gallery | Mayfair, London</span>
+                    <span class="text-xs uppercase tracking-widest text-primary font-bold" data-i18n="contact_flagship_gallery">Flagship Gallery | Mayfair, London</span>
                 </div>
             </div>
 
@@ -287,6 +287,15 @@
 
 <script>
 
+        </script>
+<script>
+
+        </script>
+<script>
+
+        </script>
+<script>
+
         // Mobile Menu
         const menuBtn = document.getElementById('mobile-menu-btn');
         const drawer = document.getElementById('mobile-drawer');
@@ -312,15 +321,21 @@
         // ==== Global Logic ====
         let currentLang = localStorage.getItem('lang') || 'en';
         let currentCurrency = localStorage.getItem('currency') || 'USD';
+        let exchangeRate = 1;
         let translations = {};
 
         async function initGlobal() {
             try {
+                // Fetch translations directly
                 const transRes = await fetch('translations.json').then(r => r.json());
                 translations = transRes;
                 applyLanguage();
-                const cToggle = document.getElementById('currency-toggle');
-                if (cToggle) cToggle.textContent = currentCurrency;
+                if (typeof updateCurrencyDisplay === 'function') {
+                    updateCurrencyDisplay();
+                } else {
+                    const cToggle = document.getElementById('currency-toggle');
+                    if (cToggle) cToggle.textContent = currentCurrency;
+                }
             } catch (err) {
                 console.error("Global init error:", err);
             }
@@ -332,7 +347,17 @@
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 if (translations[currentLang] && translations[currentLang][key]) {
-                    el.textContent = translations[currentLang][key];
+                    if (el.hasAttribute('placeholder')) {
+                        el.placeholder = translations[currentLang][key];
+                    } else if (el.tagName === 'OPTION') {
+                        el.text = translations[currentLang][key];
+                    } else {
+                        if (translations[currentLang][key].includes('<')) {
+                             el.innerHTML = translations[currentLang][key];
+                        } else {
+                             el.textContent = translations[currentLang][key];
+                        }
+                    }
                 }
             });
             const lt = document.getElementById('lang-toggle');
@@ -365,6 +390,7 @@
                 currentCurrency = currentCurrency === 'USD' ? 'EGP' : 'USD';
                 localStorage.setItem('currency', currentCurrency);
                 currToggleBtn.textContent = currentCurrency;
+                if (typeof updateCurrencyDisplay === 'function') updateCurrencyDisplay();
             });
         }
 
@@ -373,8 +399,7 @@
             mcurrToggleBtn.addEventListener('click', () => {
                 currentCurrency = currentCurrency === 'USD' ? 'EGP' : 'USD';
                 localStorage.setItem('currency', currentCurrency);
-                const ct = document.getElementById('currency-toggle');
-                if (ct) ct.textContent = currentCurrency;
+                if (typeof updateCurrencyDisplay === 'function') updateCurrencyDisplay();
             });
         }
 
