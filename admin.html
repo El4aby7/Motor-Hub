@@ -164,7 +164,8 @@
                         <h3 class="text-lg font-bold uppercase tracking-widest text-primary">Main Gallery</h3>
                         <div class="flex items-center gap-4 bg-[#1c1b1b] border border-[#2b2a2a] rounded p-2">
                             <input type="file" id="upload-main-gallery" class="hidden" accept="image/*" multiple/>
-                            <button type="button" class="bg-primary text-black font-bold text-xs py-2 px-6 rounded-full" onclick="document.getElementById('upload-main-gallery').click()">Upload Images</button>
+                            <button type="button" class="bg-surface-container-low border border-outline-variant text-white font-bold text-xs py-2 px-6 rounded-full hover:bg-white/5" onclick="document.getElementById('upload-main-gallery').click()">Select Images</button>
+                            <button type="button" id="btn-save-main-gallery" class="bg-primary text-black font-bold text-xs py-2 px-6 rounded-full">Save Gallery</button>
                         </div>
                     </div>
                     <div id="main-gallery-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
@@ -178,7 +179,8 @@
                         <h3 class="text-lg font-bold uppercase tracking-widest text-primary">Satisfied Clients</h3>
                         <div class="flex items-center gap-4 bg-[#1c1b1b] border border-[#2b2a2a] rounded p-2">
                             <input type="file" id="upload-client-gallery" class="hidden" accept="image/*" multiple/>
-                            <button type="button" class="bg-primary text-black font-bold text-xs py-2 px-6 rounded-full" onclick="document.getElementById('upload-client-gallery').click()">Upload Images</button>
+                            <button type="button" class="bg-surface-container-low border border-outline-variant text-white font-bold text-xs py-2 px-6 rounded-full hover:bg-white/5" onclick="document.getElementById('upload-client-gallery').click()">Select Images</button>
+                            <button type="button" id="btn-save-client-gallery" class="bg-primary text-black font-bold text-xs py-2 px-6 rounded-full">Save Gallery</button>
                         </div>
                     </div>
                     <div id="client-gallery-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
@@ -1125,89 +1127,186 @@
 
         // ==== GALLERY TAB LOGIC ====
 
+        // Local state for queueing changes before saving
+        const galleryState = {
+            main: { current: [], filesToUpload: [], idsToDelete: [] },
+            client: { current: [], filesToUpload: [], idsToDelete: [] }
+        };
+
         async function renderGalleryTab() {
+            // Load fresh from DB
+            try {
+                galleryState.main.current = await getGalleryImages();
+                galleryState.main.filesToUpload = [];
+                galleryState.main.idsToDelete = [];
+            } catch (e) { galleryState.main.current = []; }
+
+            try {
+                galleryState.client.current = await getClientImages();
+                galleryState.client.filesToUpload = [];
+                galleryState.client.idsToDelete = [];
+            } catch (e) { galleryState.client.current = []; }
+
             renderMainGallery();
             renderClientGallery();
         }
 
-        async function renderMainGallery() {
+        function renderMainGallery() {
             const grid = document.getElementById('main-gallery-grid');
-            grid.innerHTML = '<p class="text-neutral-500 text-sm col-span-full">Loading...</p>';
-            try {
-                const images = await getGalleryImages();
-                if (images.length === 0) {
-                    grid.innerHTML = '<p class="text-neutral-500 text-sm col-span-full">No images found.</p>';
-                    return;
-                }
-                grid.innerHTML = images.map(img => `
-                    <div class="relative group aspect-square rounded overflow-hidden border border-outline-variant">
-                        <img src="${escapeHTML(img.image_url)}" class="w-full h-full object-cover" />
-                        <button type="button" class="absolute top-2 right-2 bg-black/80 text-red-500 rounded p-1.5 hidden group-hover:block z-10 hover:text-red-400" onclick="window.delMainGallery('${escapeHTML(img.id)}')"><span class="material-symbols-outlined text-[14px]">delete</span></button>
-                    </div>
-                `).join('');
-            } catch(e) { grid.innerHTML = '<p class="text-red-500 text-sm col-span-full">Error loading</p>'; }
+            const images = galleryState.main.current.filter(img => !galleryState.main.idsToDelete.includes(img.id));
+            const newFiles = galleryState.main.filesToUpload;
+
+            if (images.length === 0 && newFiles.length === 0) {
+                grid.innerHTML = '<p class="text-neutral-500 text-sm col-span-full">No images found.</p>';
+                return;
+            }
+
+            let html = images.map(img => `
+                <div class="relative group aspect-square rounded overflow-hidden border border-outline-variant">
+                    <img src="${escapeHTML(img.image_url)}" class="w-full h-full object-cover" />
+                    <button type="button" class="absolute top-2 right-2 bg-black/80 text-red-500 rounded p-1.5 hidden group-hover:block z-10 hover:text-red-400" onclick="window.queueDelMainGallery('${escapeHTML(img.id)}')"><span class="material-symbols-outlined text-[14px]">delete</span></button>
+                </div>
+            `).join('');
+
+            html += newFiles.map((file, idx) => `
+                <div class="relative group aspect-square rounded overflow-hidden border border-primary/50 opacity-70">
+                    <img src="${URL.createObjectURL(file)}" class="w-full h-full object-cover" />
+                    <span class="absolute bottom-1 left-1 text-[8px] bg-black px-1 rounded text-primary uppercase font-bold tracking-widest z-10">Pending</span>
+                    <button type="button" class="absolute top-2 right-2 bg-black/80 text-red-500 rounded p-1.5 hidden group-hover:block z-10 hover:text-red-400" onclick="window.removePendingMainGallery(${idx})"><span class="material-symbols-outlined text-[14px]">close</span></button>
+                </div>
+            `).join('');
+
+            grid.innerHTML = html;
         }
 
-        async function renderClientGallery() {
+        function renderClientGallery() {
             const grid = document.getElementById('client-gallery-grid');
-            grid.innerHTML = '<p class="text-neutral-500 text-sm col-span-full">Loading...</p>';
-            try {
-                const images = await getClientImages();
-                if (images.length === 0) {
-                    grid.innerHTML = '<p class="text-neutral-500 text-sm col-span-full">No images found.</p>';
-                    return;
-                }
-                grid.innerHTML = images.map(img => `
-                    <div class="relative group aspect-square rounded overflow-hidden border border-outline-variant">
-                        <img src="${escapeHTML(img.image_url)}" class="w-full h-full object-cover" />
-                        <button type="button" class="absolute top-2 right-2 bg-black/80 text-red-500 rounded p-1.5 hidden group-hover:block z-10 hover:text-red-400" onclick="window.delClientGallery('${escapeHTML(img.id)}')"><span class="material-symbols-outlined text-[14px]">delete</span></button>
-                    </div>
-                `).join('');
-            } catch(e) { grid.innerHTML = '<p class="text-red-500 text-sm col-span-full">Error loading</p>'; }
+            const images = galleryState.client.current.filter(img => !galleryState.client.idsToDelete.includes(img.id));
+            const newFiles = galleryState.client.filesToUpload;
+
+            if (images.length === 0 && newFiles.length === 0) {
+                grid.innerHTML = '<p class="text-neutral-500 text-sm col-span-full">No images found.</p>';
+                return;
+            }
+
+            let html = images.map(img => `
+                <div class="relative group aspect-square rounded overflow-hidden border border-outline-variant">
+                    <img src="${escapeHTML(img.image_url)}" class="w-full h-full object-cover" />
+                    <button type="button" class="absolute top-2 right-2 bg-black/80 text-red-500 rounded p-1.5 hidden group-hover:block z-10 hover:text-red-400" onclick="window.queueDelClientGallery('${escapeHTML(img.id)}')"><span class="material-symbols-outlined text-[14px]">delete</span></button>
+                </div>
+            `).join('');
+
+            html += newFiles.map((file, idx) => `
+                <div class="relative group aspect-square rounded overflow-hidden border border-primary/50 opacity-70">
+                    <img src="${URL.createObjectURL(file)}" class="w-full h-full object-cover" />
+                    <span class="absolute bottom-1 left-1 text-[8px] bg-black px-1 rounded text-primary uppercase font-bold tracking-widest z-10">Pending</span>
+                    <button type="button" class="absolute top-2 right-2 bg-black/80 text-red-500 rounded p-1.5 hidden group-hover:block z-10 hover:text-red-400" onclick="window.removePendingClientGallery(${idx})"><span class="material-symbols-outlined text-[14px]">close</span></button>
+                </div>
+            `).join('');
+
+            grid.innerHTML = html;
         }
 
-        window.delMainGallery = async function(id) {
-            if(!confirm("Delete this image?")) return;
-            try { await deleteGalleryImage(id); renderMainGallery(); } catch(e) { alert('Delete failed'); }
-        }
+        window.queueDelMainGallery = function(id) {
+            galleryState.main.idsToDelete.push(id);
+            renderMainGallery();
+        };
 
-        window.delClientGallery = async function(id) {
-            if(!confirm("Delete this image?")) return;
-            try { await deleteClientImage(id); renderClientGallery(); } catch(e) { alert('Delete failed'); }
-        }
+        window.removePendingMainGallery = function(idx) {
+            galleryState.main.filesToUpload.splice(idx, 1);
+            renderMainGallery();
+        };
 
-        document.getElementById('upload-main-gallery').addEventListener('change', async (e) => {
+        window.queueDelClientGallery = function(id) {
+            galleryState.client.idsToDelete.push(id);
+            renderClientGallery();
+        };
+
+        window.removePendingClientGallery = function(idx) {
+            galleryState.client.filesToUpload.splice(idx, 1);
+            renderClientGallery();
+        };
+
+        document.getElementById('upload-main-gallery').addEventListener('change', (e) => {
             const files = Array.from(e.target.files);
-            if (files.length === 0) return;
-            const btn = e.target.nextElementSibling;
+            if (files.length > 0) {
+                galleryState.main.filesToUpload.push(...files);
+                renderMainGallery();
+            }
+            e.target.value = ''; // Reset input
+        });
+
+        document.getElementById('upload-client-gallery').addEventListener('change', (e) => {
+            const files = Array.from(e.target.files);
+            if (files.length > 0) {
+                galleryState.client.filesToUpload.push(...files);
+                renderClientGallery();
+            }
+            e.target.value = ''; // Reset input
+        });
+
+        document.getElementById('btn-save-main-gallery').addEventListener('click', async (e) => {
+            const btn = e.target;
             const origText = btn.textContent;
-            btn.textContent = 'Uploading...';
+            btn.textContent = 'Saving...';
             btn.disabled = true;
+
             try {
-                for (let file of files) {
+                // Perform deletions
+                for (let id of galleryState.main.idsToDelete) {
+                    await deleteGalleryImage(id);
+                }
+
+                // Perform uploads and creations
+                for (let file of galleryState.main.filesToUpload) {
                     const url = await uploadImage(file, 'gallery-images');
                     await createGalleryImage({ image_url: url });
                 }
+
+                // Refresh state from DB
+                galleryState.main.current = await getGalleryImages();
+                galleryState.main.filesToUpload = [];
+                galleryState.main.idsToDelete = [];
                 renderMainGallery();
-            } catch(err) { alert('Upload failed'); console.error(err); }
-            finally { btn.textContent = origText; btn.disabled = false; e.target.value = ''; }
+            } catch (err) {
+                alert('Save failed');
+                console.error(err);
+            } finally {
+                btn.textContent = origText;
+                btn.disabled = false;
+            }
         });
 
-        document.getElementById('upload-client-gallery').addEventListener('change', async (e) => {
-            const files = Array.from(e.target.files);
-            if (files.length === 0) return;
-            const btn = e.target.nextElementSibling;
+        document.getElementById('btn-save-client-gallery').addEventListener('click', async (e) => {
+            const btn = e.target;
             const origText = btn.textContent;
-            btn.textContent = 'Uploading...';
+            btn.textContent = 'Saving...';
             btn.disabled = true;
+
             try {
-                for (let file of files) {
+                // Perform deletions
+                for (let id of galleryState.client.idsToDelete) {
+                    await deleteClientImage(id);
+                }
+
+                // Perform uploads and creations
+                for (let file of galleryState.client.filesToUpload) {
                     const url = await uploadImage(file, 'client-images');
                     await createClientImage({ image_url: url });
                 }
+
+                // Refresh state from DB
+                galleryState.client.current = await getClientImages();
+                galleryState.client.filesToUpload = [];
+                galleryState.client.idsToDelete = [];
                 renderClientGallery();
-            } catch(err) { alert('Upload failed'); console.error(err); }
-            finally { btn.textContent = origText; btn.disabled = false; e.target.value = ''; }
+            } catch (err) {
+                alert('Save failed');
+                console.error(err);
+            } finally {
+                btn.textContent = origText;
+                btn.disabled = false;
+            }
         });
 
         // ==== TAB LOGIC ====

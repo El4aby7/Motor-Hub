@@ -164,25 +164,38 @@
         </div>
     </section>
 
-        <!-- Main Gallery Section -->
+        <!-- Gallery Section -->
         <section class="py-24 px-4 md:px-12 max-w-[1600px] mx-auto w-full border-b border-outline-variant/30">
             <header class="mb-16 flex flex-col items-center text-center">
                 <div class="tracking-widest text-primary text-xs uppercase font-bold mb-4">Gallery</div>
                 <h2 class="text-4xl md:text-5xl font-extrabold tracking-tight uppercase">Masterpieces In Motion</h2>
             </header>
-            <div id="homepage-gallery-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8">
-                <!-- Gallery items injected here -->
-            </div>
-        </section>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+                <!-- Main Gallery Window -->
+                <div class="flex flex-col items-center">
+                    <h3 class="text-2xl font-bold tracking-tight uppercase mb-6 text-white text-center">Main Gallery</h3>
+                    <div id="main-gallery-window" class="relative w-full aspect-[4/3] bg-surface-container-low rounded overflow-hidden border border-outline-variant/30 cursor-pointer group">
+                        <div id="main-gallery-container" class="w-full h-full relative">
+                            <p class="text-neutral-500 absolute inset-0 flex items-center justify-center">Loading...</p>
+                        </div>
+                        <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none z-10">
+                            <span class="bg-primary text-black px-4 py-2 text-xs font-bold uppercase tracking-widest rounded-full shadow-lg">View Full Gallery</span>
+                        </div>
+                    </div>
+                </div>
 
-        <!-- Satisfied Clients Section -->
-        <section class="py-24 px-4 md:px-12 max-w-[1600px] mx-auto w-full bg-surface-container-low/30 border-b border-outline-variant/30">
-            <header class="mb-16 flex flex-col items-center text-center">
-                <div class="tracking-widest text-primary text-xs uppercase font-bold mb-4">Testimonials</div>
-                <h2 class="text-4xl md:text-5xl font-extrabold tracking-tight uppercase">Satisfied Clients</h2>
-            </header>
-            <div id="homepage-clients-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8">
-                <!-- Client items injected here -->
+                <!-- Satisfied Clients Window -->
+                <div class="flex flex-col items-center">
+                    <h3 class="text-2xl font-bold tracking-tight uppercase mb-6 text-white text-center">Satisfied Clients</h3>
+                    <div id="clients-gallery-window" class="relative w-full aspect-[4/3] bg-surface-container-low rounded overflow-hidden border border-outline-variant/30 cursor-pointer group">
+                        <div id="clients-gallery-container" class="w-full h-full relative">
+                            <p class="text-neutral-500 absolute inset-0 flex items-center justify-center">Loading...</p>
+                        </div>
+                        <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none z-10">
+                            <span class="bg-primary text-black px-4 py-2 text-xs font-bold uppercase tracking-widest rounded-full shadow-lg">View Full Gallery</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -219,6 +232,30 @@
         </a>
     </div>
 
+    <!-- Fullscreen Lightbox Modal -->
+    <div id="lightbox-modal" class="fixed inset-0 bg-black/95 z-[100] hidden flex flex-col backdrop-blur-sm">
+        <!-- Header -->
+        <div class="flex justify-between items-center p-4 md:p-6 text-white absolute top-0 w-full z-10 bg-gradient-to-b from-black/80 to-transparent">
+            <span id="lightbox-counter" class="text-sm font-bold tracking-widest text-primary">1 / 10</span>
+            <button id="lightbox-close" class="hover:text-primary transition-colors p-2">
+                <span class="material-symbols-outlined text-3xl">close</span>
+            </button>
+        </div>
+
+        <!-- Main Image Area -->
+        <div class="flex-grow flex items-center justify-center relative overflow-hidden px-12 md:px-24" id="lightbox-touch-area">
+            <img id="lightbox-image" src="" alt="Fullscreen Gallery Image" class="max-w-full max-h-[85vh] object-contain select-none transition-opacity duration-300" />
+
+            <!-- Navigation Buttons -->
+            <button id="lightbox-prev" class="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 text-white/50 hover:text-white hover:scale-110 transition-all p-2 hidden sm:block">
+                <span class="material-symbols-outlined text-5xl">chevron_left</span>
+            </button>
+            <button id="lightbox-next" class="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 text-white/50 hover:text-white hover:scale-110 transition-all p-2 hidden sm:block">
+                <span class="material-symbols-outlined text-5xl">chevron_right</span>
+            </button>
+        </div>
+    </div>
+
     <script type="module">
         import { getSettings, subscribeToSettings } from './settings.js';
         import { getSpotlightVehicles } from './products.js';
@@ -252,8 +289,8 @@
                 }
 
                 renderSpotlight(spotlight);
-                renderGallery(galleryImages, 'homepage-gallery-grid');
-                renderGallery(clientImages, 'homepage-clients-grid');
+                renderGallery(galleryImages, 'main');
+                renderGallery(clientImages, 'clients');
                 applyLanguage();
                 updateCurrencyDisplay();
             } catch (err) {
@@ -286,19 +323,72 @@
             );
         }
 
-        // Render Galleries
-        function renderGallery(images, elementId) {
-            const grid = document.getElementById(elementId);
-            if (!images || images.length === 0) {
-                grid.innerHTML = '<p class="text-neutral-500 col-span-full text-center">Coming soon.</p>';
+        // Render Galleries & Auto-Rotation Logic
+        const galleryStates = {
+            main: { images: [], currentIndex: 0, containerId: 'main-gallery-container', intervalId: null },
+            clients: { images: [], currentIndex: 0, containerId: 'clients-gallery-container', intervalId: null }
+        };
+
+        function renderGallery(images, type) {
+            const state = galleryStates[type];
+            state.images = images || [];
+            const container = document.getElementById(state.containerId);
+
+            if (state.images.length === 0) {
+                container.innerHTML = '<p class="text-neutral-500 absolute inset-0 flex items-center justify-center">Coming soon.</p>';
                 return;
             }
-            grid.innerHTML = images.map(img => `
-                <div class="relative overflow-hidden aspect-square bg-surface-container-low rounded group cursor-pointer border border-outline-variant/30">
-                    <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="${escapeHTML(img.image_url)}" alt="Gallery Image" loading="lazy" />
-                    <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                </div>
+
+            // Create image elements for smooth transition
+            container.innerHTML = state.images.map((img, idx) => `
+                <img
+                    src="${escapeHTML(img.image_url)}"
+                    alt="${type} Image ${idx + 1}"
+                    class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${idx === 0 ? 'opacity-100' : 'opacity-0'}"
+                    loading="${idx === 0 ? 'eager' : 'lazy'}"
+                    data-idx="${idx}"
+                />
             `).join('');
+
+            // Preload next image immediately
+            if (state.images.length > 1) {
+                const nextImg = new Image();
+                nextImg.src = state.images[1].image_url;
+            }
+
+            startAutoRotation(type);
+        }
+
+        function startAutoRotation(type) {
+            const state = galleryStates[type];
+            if (state.intervalId) clearInterval(state.intervalId);
+            if (state.images.length <= 1) return;
+
+            state.intervalId = setInterval(() => {
+                const container = document.getElementById(state.containerId);
+                if (!container) return; // safety check
+
+                const currentIdx = state.currentIndex;
+                const nextIdx = (currentIdx + 1) % state.images.length;
+
+                const currentImgEl = container.querySelector(`[data-idx="${currentIdx}"]`);
+                const nextImgEl = container.querySelector(`[data-idx="${nextIdx}"]`);
+
+                if (currentImgEl && nextImgEl) {
+                    currentImgEl.classList.remove('opacity-100');
+                    currentImgEl.classList.add('opacity-0');
+                    nextImgEl.classList.remove('opacity-0');
+                    nextImgEl.classList.add('opacity-100');
+                }
+
+                state.currentIndex = nextIdx;
+
+                // Preload the image after next to avoid flicker on slow networks
+                const preloadIdx = (nextIdx + 1) % state.images.length;
+                const preloadImg = new Image();
+                preloadImg.src = state.images[preloadIdx].image_url;
+
+            }, 3000);
         }
 
         // Spotlight Render
@@ -396,6 +486,109 @@
                 updateCurrencyDisplay();
             });
         }
+
+        // Lightbox State and Logic
+        const lightbox = {
+            isOpen: false,
+            images: [],
+            currentIndex: 0,
+            touchStartX: 0
+        };
+        const lightboxModal = document.getElementById('lightbox-modal');
+        const lightboxImage = document.getElementById('lightbox-image');
+        const lightboxCounter = document.getElementById('lightbox-counter');
+
+        function openLightbox(type) {
+            const state = galleryStates[type];
+            if (!state || state.images.length === 0) return;
+
+            lightbox.images = state.images;
+            lightbox.currentIndex = 0; // Or state.currentIndex if you want to open exactly where it is
+
+            updateLightboxUI();
+            lightboxModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+            lightbox.isOpen = true;
+        }
+
+        function closeLightbox() {
+            lightboxModal.classList.add('hidden');
+            document.body.style.overflow = '';
+            lightbox.isOpen = false;
+        }
+
+        function updateLightboxUI() {
+            if (lightbox.images.length === 0) return;
+            const img = lightbox.images[lightbox.currentIndex];
+
+            // Fade effect
+            lightboxImage.style.opacity = '0';
+            setTimeout(() => {
+                lightboxImage.src = img.image_url;
+                lightboxImage.onload = () => { lightboxImage.style.opacity = '1'; };
+                // Fallback if cached
+                if(lightboxImage.complete) lightboxImage.style.opacity = '1';
+            }, 150);
+
+            lightboxCounter.textContent = `${lightbox.currentIndex + 1} / ${lightbox.images.length}`;
+
+            // Preload next and prev
+            if (lightbox.images.length > 1) {
+                const nextIdx = (lightbox.currentIndex + 1) % lightbox.images.length;
+                const prevIdx = (lightbox.currentIndex - 1 + lightbox.images.length) % lightbox.images.length;
+                new Image().src = lightbox.images[nextIdx].image_url;
+                new Image().src = lightbox.images[prevIdx].image_url;
+            }
+        }
+
+        function lightboxNext() {
+            if (lightbox.images.length <= 1) return;
+            lightbox.currentIndex = (lightbox.currentIndex + 1) % lightbox.images.length;
+            updateLightboxUI();
+        }
+
+        function lightboxPrev() {
+            if (lightbox.images.length <= 1) return;
+            lightbox.currentIndex = (lightbox.currentIndex - 1 + lightbox.images.length) % lightbox.images.length;
+            updateLightboxUI();
+        }
+
+        // Lightbox Event Listeners
+        document.getElementById('main-gallery-window').addEventListener('click', () => openLightbox('main'));
+        document.getElementById('clients-gallery-window').addEventListener('click', () => openLightbox('clients'));
+
+        document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
+        document.getElementById('lightbox-next').addEventListener('click', (e) => { e.stopPropagation(); lightboxNext(); });
+        document.getElementById('lightbox-prev').addEventListener('click', (e) => { e.stopPropagation(); lightboxPrev(); });
+
+        // Close on background click
+        lightboxModal.addEventListener('click', (e) => {
+            if (e.target === lightboxModal || e.target.id === 'lightbox-touch-area') {
+                closeLightbox();
+            }
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (!lightbox.isOpen) return;
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowRight') lightboxNext();
+            if (e.key === 'ArrowLeft') lightboxPrev();
+        });
+
+        // Touch/Swipe support for mobile
+        const touchArea = document.getElementById('lightbox-touch-area');
+        touchArea.addEventListener('touchstart', (e) => {
+            lightbox.touchStartX = e.changedTouches[0].screenX;
+        }, {passive: true});
+
+        touchArea.addEventListener('touchend', (e) => {
+            const touchEndX = e.changedTouches[0].screenX;
+            const diff = lightbox.touchStartX - touchEndX;
+            // 50px threshold
+            if (diff > 50) lightboxNext(); // Swiped left
+            else if (diff < -50) lightboxPrev(); // Swiped right
+        }, {passive: true});
 
         // FAB
         const fabBtn = document.getElementById('fab-btn');
