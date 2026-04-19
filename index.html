@@ -71,6 +71,7 @@
     </style>
 </head>
 <body class="bg-background text-on-surface min-h-screen flex flex-col">
+    <div class="fixed inset-0 pointer-events-none z-[-1] flex items-center justify-center opacity-5"><img src="background-logo.png" class="w-[80vw] max-w-[800px] object-contain"></div>
     <!-- TopNavBar -->
     <nav class="fixed top-0 w-full z-50 bg-neutral-900/80 backdrop-blur-xl flex justify-between items-center px-4 md:px-12 py-5 shadow-2xl shadow-yellow-500/10">
         <!-- Clickable Logo/Brand -->
@@ -437,13 +438,23 @@
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 if (translations[currentLang] && translations[currentLang][key]) {
-                    el.textContent = translations[currentLang][key];
+                    if (el.hasAttribute('placeholder')) {
+                        el.placeholder = translations[currentLang][key];
+                    } else if (el.tagName === 'OPTION') {
+                        el.text = translations[currentLang][key];
+                    } else {
+                        if (translations[currentLang][key].includes('<')) {
+                             el.innerHTML = translations[currentLang][key];
+                        } else {
+                             el.textContent = translations[currentLang][key];
+                        }
+                    }
                 }
             });
             const lt = document.getElementById('lang-toggle');
-            if (lt) lt.textContent = currentLang === 'en' ? 'AR' : 'EN';
+            if(lt) lt.textContent = currentLang === 'en' ? 'AR' : 'EN';
             const mlt = document.getElementById('mobile-lang-toggle');
-            if (mlt) mlt.textContent = currentLang === 'en' ? 'Switch to AR' : 'Switch to EN';
+            if(mlt) mlt.textContent = currentLang === 'en' ? 'Switch to AR' : 'Switch to EN';
         }
 
         // Event Listeners

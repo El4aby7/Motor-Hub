@@ -39,7 +39,19 @@ const logicStr = `
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 if (translations[currentLang] && translations[currentLang][key]) {
-                    el.textContent = translations[currentLang][key];
+                    if (el.hasAttribute('placeholder')) {
+                        el.placeholder = translations[currentLang][key];
+                    } else if (el.tagName === 'OPTION') {
+                        el.text = translations[currentLang][key];
+                    } else {
+                        // Because some keys have nested HTML (like <span>), we use innerHTML if there's html in the translation, else textContent
+                        // For safety, textContent is usually preferred, but some of our translations contain spans.
+                        if (translations[currentLang][key].includes('<')) {
+                             el.innerHTML = translations[currentLang][key];
+                        } else {
+                             el.textContent = translations[currentLang][key];
+                        }
+                    }
                 }
             });
             const lt = document.getElementById('lang-toggle');
