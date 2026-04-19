@@ -74,7 +74,9 @@
     <!-- TopNavBar -->
     <nav class="fixed top-0 w-full z-50 bg-neutral-900/80 backdrop-blur-xl flex justify-between items-center px-4 md:px-12 py-5 shadow-2xl shadow-yellow-500/10">
         <!-- Clickable Logo/Brand -->
-        <a href="index.html" class="site-brand text-2xl font-black tracking-tighter text-primary hover:opacity-80 transition-opacity">MOTOR HUB</a>
+        <a href="index.html" class="site-brand text-2xl font-black tracking-tighter text-primary hover:opacity-80 transition-opacity">
+            <img src="motor-hub-logo.png" alt="Motor Hub Logo" class="h-8 md:h-10 object-contain" />
+        </a>
 
         <!-- Desktop Nav -->
         <div class="hidden md:flex gap-10 items-center">
@@ -162,6 +164,28 @@
         </div>
     </section>
 
+        <!-- Main Gallery Section -->
+        <section class="py-24 px-4 md:px-12 max-w-[1600px] mx-auto w-full border-b border-outline-variant/30">
+            <header class="mb-16 flex flex-col items-center text-center">
+                <div class="tracking-widest text-primary text-xs uppercase font-bold mb-4">Gallery</div>
+                <h2 class="text-4xl md:text-5xl font-extrabold tracking-tight uppercase">Masterpieces In Motion</h2>
+            </header>
+            <div id="homepage-gallery-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8">
+                <!-- Gallery items injected here -->
+            </div>
+        </section>
+
+        <!-- Satisfied Clients Section -->
+        <section class="py-24 px-4 md:px-12 max-w-[1600px] mx-auto w-full bg-surface-container-low/30 border-b border-outline-variant/30">
+            <header class="mb-16 flex flex-col items-center text-center">
+                <div class="tracking-widest text-primary text-xs uppercase font-bold mb-4">Testimonials</div>
+                <h2 class="text-4xl md:text-5xl font-extrabold tracking-tight uppercase">Satisfied Clients</h2>
+            </header>
+            <div id="homepage-clients-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8">
+                <!-- Client items injected here -->
+            </div>
+        </section>
+
         <!-- Spotlight Gallery -->
         <section class="py-24 px-4 md:px-12 max-w-[1600px] mx-auto w-full">
             <header class="mb-16 flex justify-between items-end">
@@ -198,6 +222,7 @@
     <script type="module">
         import { getSettings, subscribeToSettings } from './settings.js';
         import { getSpotlightVehicles } from './products.js';
+        import { getGalleryImages, getClientImages } from './gallery.js';
 
         // State
         let currentLang = localStorage.getItem('lang') || 'en';
@@ -208,10 +233,12 @@
         // Fetch Data on Load
         async function init() {
             try {
-                const [settings, spotlight, transRes] = await Promise.all([
+                const [settings, spotlight, transRes, galleryImages, clientImages] = await Promise.all([
                     getSettings().catch(() => ({ hero_bg_url: '', usd_to_egp_rate: 50 })),
                     getSpotlightVehicles().catch(() => []),
-                    fetch('translations.json').then(r => r.json())
+                    fetch('translations.json').then(r => r.json()),
+                    getGalleryImages().catch(() => []),
+                    getClientImages().catch(() => [])
                 ]);
 
                 translations = transRes;
@@ -225,6 +252,8 @@
                 }
 
                 renderSpotlight(spotlight);
+                renderGallery(galleryImages, 'homepage-gallery-grid');
+                renderGallery(clientImages, 'homepage-clients-grid');
                 applyLanguage();
                 updateCurrencyDisplay();
             } catch (err) {
@@ -255,6 +284,21 @@
                     '"': '&quot;'
                 }[tag])
             );
+        }
+
+        // Render Galleries
+        function renderGallery(images, elementId) {
+            const grid = document.getElementById(elementId);
+            if (!images || images.length === 0) {
+                grid.innerHTML = '<p class="text-neutral-500 col-span-full text-center">Coming soon.</p>';
+                return;
+            }
+            grid.innerHTML = images.map(img => `
+                <div class="relative overflow-hidden aspect-square bg-surface-container-low rounded group cursor-pointer border border-outline-variant/30">
+                    <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="${escapeHTML(img.image_url)}" alt="Gallery Image" loading="lazy" />
+                    <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+            `).join('');
         }
 
         // Spotlight Render

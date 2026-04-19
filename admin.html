@@ -73,7 +73,9 @@
         <!-- Sidebar -->
         <aside class="w-full md:w-64 bg-surface-container-low border-r border-outline-variant flex flex-col">
             <div class="p-6 border-b border-outline-variant flex justify-between items-center">
-                <span class="font-black text-primary text-xl tracking-tighter">MOTOR HUB</span>
+                <span class="font-black text-primary text-xl tracking-tighter">
+                    <img src="motor-hub-logo.png" alt="Motor Hub Logo" class="h-8 object-contain" />
+                </span>
                 <button id="logout-btn" class="text-xs text-neutral-500 hover:text-white uppercase tracking-widest">Logout</button>
             </div>
             <nav class="flex-grow flex flex-col p-4 gap-2">
@@ -81,6 +83,7 @@
                 <button class="nav-tab text-left px-4 py-3 rounded uppercase text-xs tracking-widest text-neutral-400 font-bold hover:bg-white/5 hover:text-white transition-colors" data-target="tab-brands">Brands</button>
                 <button class="nav-tab text-left px-4 py-3 rounded uppercase text-xs tracking-widest text-neutral-400 font-bold hover:bg-white/5 hover:text-white transition-colors" data-target="tab-categories">Categories</button>
                 <button class="nav-tab text-left px-4 py-3 rounded uppercase text-xs tracking-widest text-neutral-400 font-bold hover:bg-white/5 hover:text-white transition-colors" data-target="tab-inquiries">Inquiries</button>
+                <button class="nav-tab text-left px-4 py-3 rounded uppercase text-xs tracking-widest text-neutral-400 font-bold hover:bg-white/5 hover:text-white transition-colors" data-target="tab-gallery">Gallery</button>
                 <button class="nav-tab text-left px-4 py-3 rounded uppercase text-xs tracking-widest text-neutral-400 font-bold hover:bg-white/5 hover:text-white transition-colors" data-target="tab-settings">Settings</button>
             </nav>
         </aside>
@@ -146,6 +149,41 @@
                             <tr><td colspan="3" class="p-4 text-center text-neutral-500">Loading...</td></tr>
                         </tbody>
                     </table>
+                </div>
+            </section>
+
+            <!-- TAB: GALLERY -->
+            <section id="tab-gallery" class="tab-content hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-3xl font-bold tracking-tight text-white">Gallery Management</h2>
+                </div>
+
+                <!-- Main Gallery -->
+                <div class="mb-12 border border-outline-variant rounded p-6">
+                    <div class="flex justify-between items-center mb-4 border-b border-outline-variant pb-4">
+                        <h3 class="text-lg font-bold uppercase tracking-widest text-primary">Main Gallery</h3>
+                        <div class="flex items-center gap-4 bg-[#1c1b1b] border border-[#2b2a2a] rounded p-2">
+                            <input type="file" id="upload-main-gallery" class="hidden" accept="image/*" multiple/>
+                            <button type="button" class="bg-primary text-black font-bold text-xs py-2 px-6 rounded-full" onclick="document.getElementById('upload-main-gallery').click()">Upload Images</button>
+                        </div>
+                    </div>
+                    <div id="main-gallery-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                        <p class="text-neutral-500 text-sm col-span-full">Loading...</p>
+                    </div>
+                </div>
+
+                <!-- Satisfied Clients -->
+                <div class="border border-outline-variant rounded p-6">
+                    <div class="flex justify-between items-center mb-4 border-b border-outline-variant pb-4">
+                        <h3 class="text-lg font-bold uppercase tracking-widest text-primary">Satisfied Clients</h3>
+                        <div class="flex items-center gap-4 bg-[#1c1b1b] border border-[#2b2a2a] rounded p-2">
+                            <input type="file" id="upload-client-gallery" class="hidden" accept="image/*" multiple/>
+                            <button type="button" class="bg-primary text-black font-bold text-xs py-2 px-6 rounded-full" onclick="document.getElementById('upload-client-gallery').click()">Upload Images</button>
+                        </div>
+                    </div>
+                    <div id="client-gallery-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                        <p class="text-neutral-500 text-sm col-span-full">Loading...</p>
+                    </div>
                 </div>
             </section>
 
@@ -262,6 +300,7 @@
         import { getMessages, markMessageRead, markMessageUnread, deleteMessage } from './messages.js';
         import { getSettings, updateSettings, subscribeToSettings } from './settings.js';
         import { uploadImage } from './storage.js';
+        import { getGalleryImages, createGalleryImage, deleteGalleryImage, getClientImages, createClientImage, deleteClientImage } from './gallery.js';
 
         const loginView = document.getElementById('login-view');
         const dashboardView = document.getElementById('dashboard-view');
@@ -1084,6 +1123,93 @@
             }
         });
 
+        // ==== GALLERY TAB LOGIC ====
+
+        async function renderGalleryTab() {
+            renderMainGallery();
+            renderClientGallery();
+        }
+
+        async function renderMainGallery() {
+            const grid = document.getElementById('main-gallery-grid');
+            grid.innerHTML = '<p class="text-neutral-500 text-sm col-span-full">Loading...</p>';
+            try {
+                const images = await getGalleryImages();
+                if (images.length === 0) {
+                    grid.innerHTML = '<p class="text-neutral-500 text-sm col-span-full">No images found.</p>';
+                    return;
+                }
+                grid.innerHTML = images.map(img => `
+                    <div class="relative group aspect-square rounded overflow-hidden border border-outline-variant">
+                        <img src="${escapeHTML(img.image_url)}" class="w-full h-full object-cover" />
+                        <button type="button" class="absolute top-2 right-2 bg-black/80 text-red-500 rounded p-1.5 hidden group-hover:block z-10 hover:text-red-400" onclick="window.delMainGallery('${escapeHTML(img.id)}')"><span class="material-symbols-outlined text-[14px]">delete</span></button>
+                    </div>
+                `).join('');
+            } catch(e) { grid.innerHTML = '<p class="text-red-500 text-sm col-span-full">Error loading</p>'; }
+        }
+
+        async function renderClientGallery() {
+            const grid = document.getElementById('client-gallery-grid');
+            grid.innerHTML = '<p class="text-neutral-500 text-sm col-span-full">Loading...</p>';
+            try {
+                const images = await getClientImages();
+                if (images.length === 0) {
+                    grid.innerHTML = '<p class="text-neutral-500 text-sm col-span-full">No images found.</p>';
+                    return;
+                }
+                grid.innerHTML = images.map(img => `
+                    <div class="relative group aspect-square rounded overflow-hidden border border-outline-variant">
+                        <img src="${escapeHTML(img.image_url)}" class="w-full h-full object-cover" />
+                        <button type="button" class="absolute top-2 right-2 bg-black/80 text-red-500 rounded p-1.5 hidden group-hover:block z-10 hover:text-red-400" onclick="window.delClientGallery('${escapeHTML(img.id)}')"><span class="material-symbols-outlined text-[14px]">delete</span></button>
+                    </div>
+                `).join('');
+            } catch(e) { grid.innerHTML = '<p class="text-red-500 text-sm col-span-full">Error loading</p>'; }
+        }
+
+        window.delMainGallery = async function(id) {
+            if(!confirm("Delete this image?")) return;
+            try { await deleteGalleryImage(id); renderMainGallery(); } catch(e) { alert('Delete failed'); }
+        }
+
+        window.delClientGallery = async function(id) {
+            if(!confirm("Delete this image?")) return;
+            try { await deleteClientImage(id); renderClientGallery(); } catch(e) { alert('Delete failed'); }
+        }
+
+        document.getElementById('upload-main-gallery').addEventListener('change', async (e) => {
+            const files = Array.from(e.target.files);
+            if (files.length === 0) return;
+            const btn = e.target.nextElementSibling;
+            const origText = btn.textContent;
+            btn.textContent = 'Uploading...';
+            btn.disabled = true;
+            try {
+                for (let file of files) {
+                    const url = await uploadImage(file, 'gallery-images');
+                    await createGalleryImage({ image_url: url });
+                }
+                renderMainGallery();
+            } catch(err) { alert('Upload failed'); console.error(err); }
+            finally { btn.textContent = origText; btn.disabled = false; e.target.value = ''; }
+        });
+
+        document.getElementById('upload-client-gallery').addEventListener('change', async (e) => {
+            const files = Array.from(e.target.files);
+            if (files.length === 0) return;
+            const btn = e.target.nextElementSibling;
+            const origText = btn.textContent;
+            btn.textContent = 'Uploading...';
+            btn.disabled = true;
+            try {
+                for (let file of files) {
+                    const url = await uploadImage(file, 'client-images');
+                    await createClientImage({ image_url: url });
+                }
+                renderClientGallery();
+            } catch(err) { alert('Upload failed'); console.error(err); }
+            finally { btn.textContent = origText; btn.disabled = false; e.target.value = ''; }
+        });
+
         // ==== TAB LOGIC ====
         document.querySelectorAll('.nav-tab').forEach(btn => {
             btn.addEventListener('click', (e) => {
@@ -1110,6 +1236,7 @@
                 if(target === 'tab-categories') renderCategoriesTable();
                 if(target === 'tab-inquiries') renderInquiriesTable();
                 if(target === 'tab-settings') renderSettingsForm();
+                if(target === 'tab-gallery') renderGalleryTab();
             });
         });
 
