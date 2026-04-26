@@ -4,16 +4,34 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 const SUPABASE_URL = 'https://wyuenhyfnnnvhgknoknt.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_62seLeSmlfymfS7LUYtHcg_VVS7T77X';
 
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: { storage: typeof window !== 'undefined' ? window.sessionStorage : null }
+});
+
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+async function fetchWithCache(key, fetcher) {
+  try {
+    const cached = localStorage.getItem(key);
+    if (cached) {
+      const { data, timestamp } = JSON.parse(cached);
+      if (Date.now() - timestamp < CACHE_TTL) return data;
+    }
+  } catch (e) {}
+  const data = await fetcher();
+  try { localStorage.setItem(key, JSON.stringify({ data, timestamp: Date.now() })); } catch (e) {}
+  return data;
+}
 
 /**
  * Retrieves all vehicles from the database.
  * @returns {Promise<Array>} List of vehicles
  */
 export async function getVehicles() {
-  const { data, error } = await supabase.from('products').select('*').order('inventory_order', { ascending: true });
-  if (error) throw error;
-  return data;
+  return fetchWithCache('cache_vehicles', async () => {
+    const { data, error } = await supabase.from('products').select('*').order('inventory_order', { ascending: true });
+    if (error) throw error;
+    return data;
+  });
 }
 
 /**
@@ -21,9 +39,11 @@ export async function getVehicles() {
  * @returns {Promise<Array>} List of spotlight vehicles
  */
 export async function getSpotlightVehicles() {
-  const { data, error } = await supabase.from('products').select('*').eq('is_spotlight', true).order('spotlight_order', { ascending: true });
-  if (error) throw error;
-  return data;
+  return fetchWithCache('cache_spotlight', async () => {
+    const { data, error } = await supabase.from('products').select('*').eq('is_spotlight', true).order('spotlight_order', { ascending: true });
+    if (error) throw error;
+    return data;
+  });
 }
 
 /**
@@ -34,6 +54,7 @@ export async function getSpotlightVehicles() {
 export async function createVehicle(vehicle) {
   const { data, error } = await supabase.from('products').insert([vehicle]).select();
   if (error) throw error;
+  try { localStorage.removeItem('cache_vehicles'); localStorage.removeItem('cache_spotlight'); } catch(e) {}
   return data[0];
 }
 
@@ -46,6 +67,7 @@ export async function createVehicle(vehicle) {
 export async function updateVehicle(id, updates) {
   const { data, error } = await supabase.from('products').update(updates).eq('id', id).select();
   if (error) throw error;
+  try { localStorage.removeItem('cache_vehicles'); localStorage.removeItem('cache_spotlight'); } catch(e) {}
   return data[0];
 }
 
@@ -57,4 +79,5 @@ export async function updateVehicle(id, updates) {
 export async function deleteVehicle(id) {
   const { error } = await supabase.from('products').delete().eq('id', id);
   if (error) throw error;
+  try { localStorage.removeItem('cache_vehicles'); localStorage.removeItem('cache_spotlight'); } catch(e) {}
 }

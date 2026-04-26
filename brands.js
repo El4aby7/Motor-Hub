@@ -3,16 +3,34 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 const SUPABASE_URL = 'https://wyuenhyfnnnvhgknoknt.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_62seLeSmlfymfS7LUYtHcg_VVS7T77X';
 
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: { storage: typeof window !== 'undefined' ? window.sessionStorage : null }
+});
+
+const CACHE_TTL = 5 * 60 * 1000;
+async function fetchWithCache(key, fetcher) {
+  try {
+    const cached = localStorage.getItem(key);
+    if (cached) {
+      const { data, timestamp } = JSON.parse(cached);
+      if (Date.now() - timestamp < CACHE_TTL) return data;
+    }
+  } catch (e) {}
+  const data = await fetcher();
+  try { localStorage.setItem(key, JSON.stringify({ data, timestamp: Date.now() })); } catch (e) {}
+  return data;
+}
 
 /**
  * Retrieves all brands from the database.
  * @returns {Promise<Array>} List of brands
  */
 export async function getBrands() {
-  const { data, error } = await supabase.from('brands').select('*');
-  if (error) throw error;
-  return data;
+  return fetchWithCache('cache_brands', async () => {
+    const { data, error } = await supabase.from('brands').select('*');
+    if (error) throw error;
+    return data;
+  });
 }
 
 /**
@@ -23,6 +41,7 @@ export async function getBrands() {
 export async function createBrand(brand) {
   const { data, error } = await supabase.from('brands').insert([brand]).select();
   if (error) throw error;
+  try { localStorage.removeItem('cache_brands'); } catch(e) {}
   return data[0];
 }
 
@@ -35,6 +54,7 @@ export async function createBrand(brand) {
 export async function updateBrand(id, updates) {
   const { data, error } = await supabase.from('brands').update(updates).eq('id', id).select();
   if (error) throw error;
+  try { localStorage.removeItem('cache_brands'); } catch(e) {}
   return data[0];
 }
 
@@ -46,4 +66,5 @@ export async function updateBrand(id, updates) {
 export async function deleteBrand(id) {
   const { error } = await supabase.from('brands').delete().eq('id', id);
   if (error) throw error;
+  try { localStorage.removeItem('cache_brands'); } catch(e) {}
 }

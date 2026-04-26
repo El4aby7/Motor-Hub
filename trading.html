@@ -233,6 +233,7 @@
                 const res = await fetch('translations.json');
                 translations = await res.json();
                 applyLanguage();
+                import('./events.js').then(m => m.applyEventTheme()).catch(e => console.error(e));
             } catch(e) { console.error("Translations failed"); }
         }
 

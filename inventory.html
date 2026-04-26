@@ -181,6 +181,28 @@
                         <!-- Injected via JS -->
                     </div>
                 </div>
+
+                <!-- Financing Filter -->
+                <div class="flex flex-col gap-2 mt-4 border-t border-outline-variant/30 pt-4">
+                    <span class="text-[12px] text-primary font-bold mb-2 leading-tight" data-i18n="inv_finance_title" dir="rtl">قولنا معاك مقدم كام و تقدر تدفع كام قسط كل شهر و هنعرفك العربيات المتاحة حسب مقدرتك</span>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        <input id="fin-down" type="number" placeholder="Downpayment" data-i18n="placeholder_downpayment" class="bg-surface-container-low border-none text-white text-xs px-3 py-2 focus:ring-1 focus:ring-primary w-full">
+                        <input id="fin-month" type="number" placeholder="Monthly" data-i18n="placeholder_monthly" class="bg-surface-container-low border-none text-white text-xs px-3 py-2 focus:ring-1 focus:ring-primary w-full">
+                        <select id="fin-years" class="bg-surface-container-low border-none text-white text-xs px-3 py-2 focus:ring-1 focus:ring-primary w-full">
+                            <option value="" data-i18n="placeholder_years">Years...</option>
+                            <option value="1" data-i18n="1_year">1 Year</option>
+                            <option value="2" data-i18n="2_years">2 Years</option>
+                            <option value="3" data-i18n="3_years">3 Years</option>
+                            <option value="4" data-i18n="4_years">4 Years</option>
+                            <option value="5" data-i18n="5_years">5 Years</option>
+                            <option value="6" data-i18n="6_years">6 Years</option>
+                            <option value="7" data-i18n="7_years">7 Years</option>
+                            <option value="8" data-i18n="8_years">8 Years</option>
+                            <option value="9" data-i18n="9_years">9 Years</option>
+                            <option value="10" data-i18n="10_years">10 Years</option>
+                        </select>
+                    </div>
+                </div>
             </div>
         </header>
 
@@ -221,6 +243,10 @@
         const priceMax = document.getElementById('price-max');
         const priceDisplay = document.getElementById('price-display');
         const colorDotsContainer = document.getElementById('color-dots');
+        
+        const finDown = document.getElementById('fin-down');
+        const finMonth = document.getElementById('fin-month');
+        const finYears = document.getElementById('fin-years');
 
         function formatPriceFull(egpPrice) {
             if (!egpPrice) return 'Upon Request';
@@ -373,6 +399,16 @@
                 priceDisplay.textContent = `${fmtMin} – ${fmtMax}`;
             }
 
+            let financeMaxEgp = Infinity;
+            if (finDown.value && finMonth.value && finYears.value) {
+                const down = parseFloat(finDown.value);
+                const month = parseFloat(finMonth.value);
+                const years = parseFloat(finYears.value);
+                const totalPaid = month * (years * 12);
+                const financeAmount = totalPaid / (1 + (0.14 * years));
+                financeMaxEgp = down + financeAmount;
+            }
+
             const filtered = allVehicles.filter(v => {
                 const matchSearch = v.name.toLowerCase().includes(searchTerm) || (v.name_ar && v.name_ar.includes(searchTerm)) || (v.version && v.version.toLowerCase().includes(searchTerm));
                 const matchBrand = !selectedBrandId || v.brand_id === selectedBrandId;
@@ -381,7 +417,7 @@
                 if (selectedColorHex && v.colors) {
                     matchColor = v.colors.some(c => c.hex === selectedColorHex);
                 }
-                const matchPrice = !v.price_egp || (v.price_egp >= minP && v.price_egp <= maxP);
+                const matchPrice = !v.price_egp || (v.price_egp >= minP && v.price_egp <= maxP && v.price_egp <= financeMaxEgp);
                 return matchSearch && matchBrand && matchCategory && matchColor && matchPrice;
             });
 
@@ -485,8 +521,14 @@
         categorySelect.addEventListener('change', filterAndRender);
         priceMin.addEventListener('input', filterAndRender);
         priceMax.addEventListener('input', filterAndRender);
+        finDown.addEventListener('input', filterAndRender);
+        finMonth.addEventListener('input', filterAndRender);
+        finYears.addEventListener('change', filterAndRender);
 
         init();
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(err => console.error(err));
+        }
     </script>
 
     <!-- Floating FAB -->
@@ -552,7 +594,8 @@
                 if (typeof updateCurrencyDisplay === 'function') {
                     updateCurrencyDisplay();
                 } else {
-                    const cToggle = document.getElementById('currency-toggle');
+                    import('./events.js').then(m => m.applyEventTheme()).catch(e => console.error(e));
+                const cToggle = document.getElementById('currency-toggle');
                     if (cToggle) cToggle.textContent = currentCurrency;
                 }
             } catch (err) {

@@ -3,16 +3,34 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 const SUPABASE_URL = 'https://wyuenhyfnnnvhgknoknt.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_62seLeSmlfymfS7LUYtHcg_VVS7T77X';
 
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: { storage: typeof window !== 'undefined' ? window.sessionStorage : null }
+});
+
+const CACHE_TTL = 5 * 60 * 1000;
+async function fetchWithCache(key, fetcher) {
+  try {
+    const cached = localStorage.getItem(key);
+    if (cached) {
+      const { data, timestamp } = JSON.parse(cached);
+      if (Date.now() - timestamp < CACHE_TTL) return data;
+    }
+  } catch (e) {}
+  const data = await fetcher();
+  try { localStorage.setItem(key, JSON.stringify({ data, timestamp: Date.now() })); } catch (e) {}
+  return data;
+}
 
 /**
  * Retrieves all categories from the database.
  * @returns {Promise<Array>} List of categories
  */
 export async function getCategories() {
-  const { data, error } = await supabase.from('categories').select('*');
-  if (error) throw error;
-  return data;
+  return fetchWithCache('cache_categories', async () => {
+    const { data, error } = await supabase.from('categories').select('*');
+    if (error) throw error;
+    return data;
+  });
 }
 
 /**
@@ -23,6 +41,7 @@ export async function getCategories() {
 export async function createCategory(category) {
   const { data, error } = await supabase.from('categories').insert([category]).select();
   if (error) throw error;
+  try { localStorage.removeItem('cache_categories'); } catch(e) {}
   return data[0];
 }
 
@@ -35,6 +54,7 @@ export async function createCategory(category) {
 export async function updateCategory(id, updates) {
   const { data, error } = await supabase.from('categories').update(updates).eq('id', id).select();
   if (error) throw error;
+  try { localStorage.removeItem('cache_categories'); } catch(e) {}
   return data[0];
 }
 
@@ -46,4 +66,5 @@ export async function updateCategory(id, updates) {
 export async function deleteCategory(id) {
   const { error } = await supabase.from('categories').delete().eq('id', id);
   if (error) throw error;
+  try { localStorage.removeItem('cache_categories'); } catch(e) {}
 }

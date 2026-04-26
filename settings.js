@@ -3,16 +3,34 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 const SUPABASE_URL = 'https://wyuenhyfnnnvhgknoknt.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_62seLeSmlfymfS7LUYtHcg_VVS7T77X';
 
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: { storage: typeof window !== 'undefined' ? window.sessionStorage : null }
+});
+
+const CACHE_TTL = 5 * 60 * 1000;
+async function fetchWithCache(key, fetcher) {
+  try {
+    const cached = localStorage.getItem(key);
+    if (cached) {
+      const { data, timestamp } = JSON.parse(cached);
+      if (Date.now() - timestamp < CACHE_TTL) return data;
+    }
+  } catch (e) {}
+  const data = await fetcher();
+  try { localStorage.setItem(key, JSON.stringify({ data, timestamp: Date.now() })); } catch (e) {}
+  return data;
+}
 
 /**
  * Retrieves global settings from the database.
  * @returns {Promise<Object>} Settings object
  */
 export async function getSettings() {
-  const { data, error } = await supabase.from('settings').select('*').single();
-  if (error && error.code !== 'PGRST116') throw error; // PGRST116 = no rows returned
-  return data || {};
+  return fetchWithCache('cache_settings', async () => {
+    const { data, error } = await supabase.from('settings').select('*').single();
+    if (error && error.code !== 'PGRST116') throw error;
+    return data || {};
+  });
 }
 
 /**
@@ -21,9 +39,9 @@ export async function getSettings() {
  * @returns {Promise<Object>} Updated settings
  */
 export async function updateSettings(updates) {
-  // Assuming a single row with id 1 for settings
   const { data, error } = await supabase.from('settings').upsert({ id: 1, ...updates }).select();
   if (error) throw error;
+  try { localStorage.removeItem('cache_settings'); } catch(e) {}
   return data[0];
 }
 

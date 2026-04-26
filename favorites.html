@@ -289,7 +289,8 @@
                 if (typeof updateCurrencyDisplay === 'function') {
                     updateCurrencyDisplay();
                 } else {
-                    const cToggle = document.getElementById('currency-toggle');
+                    import('./events.js').then(m => m.applyEventTheme()).catch(e => console.error(e));
+                const cToggle = document.getElementById('currency-toggle');
                     if (cToggle) cToggle.textContent = currentCurrency;
                 }
             } catch (err) {
