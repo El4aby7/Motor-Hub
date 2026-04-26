@@ -260,7 +260,7 @@
     <script type="module">
         import { getSettings, subscribeToSettings } from './settings.js';
         import { getSpotlightVehicles } from './products.js';
-        import { getGalleryImages, getClientImages } from './gallery.js';
+        import { getGalleryImages } from './gallery.js';
 
         // State
         let currentLang = localStorage.getItem('lang') || 'en';
@@ -271,12 +271,11 @@
         // Fetch Data on Load
         async function init() {
             try {
-                const [settings, spotlight, transRes, galleryImages, clientImages] = await Promise.all([
+                const [settings, spotlight, transRes, galleryImages] = await Promise.all([
                     getSettings().catch(() => ({ hero_bg_url: '', usd_to_egp_rate: 50 })),
                     getSpotlightVehicles().catch(() => []),
                     fetch('translations.json').then(r => r.json()),
-                    getGalleryImages().catch(() => []),
-                    getClientImages().catch(() => [])
+                    getGalleryImages().catch(() => [])
                 ]);
 
                 translations = transRes;
@@ -291,7 +290,7 @@
 
                 renderSpotlight(spotlight);
                 renderGallery(galleryImages, 'main');
-                renderGallery(clientImages, 'clients');
+                renderGallery(galleryImages, 'clients');
                 applyLanguage();
                 updateCurrencyDisplay();
             } catch (err) {
