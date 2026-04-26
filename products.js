@@ -1,12 +1,4 @@
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-
-// Use realistic mock keys for demo, replace with real values in production.
-const SUPABASE_URL = 'https://wyuenhyfnnnvhgknoknt.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_62seLeSmlfymfS7LUYtHcg_VVS7T77X';
-
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: { storage: typeof window !== 'undefined' ? window.sessionStorage : null }
-});
+import { supabase } from './supabaseClient.js';
 
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 async function fetchWithCache(key, fetcher) {
