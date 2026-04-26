@@ -88,8 +88,8 @@
 
     <main class="pt-28 pb-24 px-4 md:px-12 max-w-[1600px] mx-auto w-full flex-grow">
         <header class="mb-16">
-            <h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter leading-none mb-4 text-white">YOUR<br/><span class="text-primary">COLLECTION</span></h1>
-            <p class="text-neutral-500 uppercase tracking-widest text-sm">Saved Vehicles</p>
+            <h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter leading-none mb-4 text-white" data-i18n="fav_title">YOUR<br/><span class="text-primary">COLLECTION</span></h1>
+            <p class="text-neutral-500 uppercase tracking-widest text-sm" data-i18n="fav_subtitle">Saved Vehicles</p>
         </header>
 
         <div id="favorites-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-24">
@@ -147,9 +147,9 @@
             grid.innerHTML = `
                 <div class="col-span-full bg-surface-container-low p-16 text-center border border-outline-variant/30 flex flex-col items-center justify-center">
                     <span class="material-symbols-outlined text-outline-variant text-6xl mb-6">heart_broken</span>
-                    <h3 class="text-3xl font-bold tracking-tight uppercase text-white mb-4">No Vehicles Saved</h3>
-                    <p class="text-neutral-400 text-sm uppercase tracking-widest mb-8">Your curated collection is currently empty.</p>
-                    <a href="inventory.html" class="bg-primary text-black font-bold uppercase tracking-widest text-xs px-8 py-4 hover:brightness-110 transition-all">
+                    <h3 class="text-3xl font-bold tracking-tight uppercase text-white mb-4" data-i18n="fav_empty_title">No Vehicles Saved</h3>
+                    <p class="text-neutral-400 text-sm uppercase tracking-widest mb-8" data-i18n="fav_empty_desc">Your curated collection is currently empty.</p>
+                    <a href="inventory.html" class="bg-primary text-black font-bold uppercase tracking-widest text-xs px-8 py-4 hover:brightness-110 transition-all" data-i18n="fav_explore">
                         Explore Inventory
                     </a>
                 </div>

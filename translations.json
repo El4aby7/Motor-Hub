@@ -118,7 +118,20 @@
     "home_gallery_view_full": "View Full Gallery",
     "home_spotlight_title": "Spotlight Collection",
     "home_spotlight_desc": "Curated Masterpieces",
-    "home_spotlight_link": "View All"
+    "home_spotlight_link": "View All",
+    "about_mission": "Our Mission",
+    "about_title": "THE APEX OF<br/>AUTOMOTIVE CONCIERGE",
+    "about_desc": "Motor Hub is not a dealership. We are a private brokerage and concierge service dedicated to sourcing the most exclusive, elusive, and extraordinary vehicles on the planet for a discerning clientele. Discretion, speed, and absolute perfection are our minimum standards.",
+    "about_future": "The Future",
+    "about_future_title": "REDEFINING THE<br/>ELECTRIC VANGUARD",
+    "about_future_desc1": "As the world pivots toward electrification, the definition of luxury and performance evolves. We maintain direct channels with the world's leading hyper-EV manufacturers, ensuring our clients are allocated the first chassis of limited-run electric masterpieces.",
+    "about_future_desc2": "From the silent, surging torque of modern electric grand tourers to the aerodynamically flawless electric hypercars shattering track records, Motor Hub secures your place at the frontier of automotive history.",
+    "fav_title": "YOUR COLLECTION",
+    "fav_subtitle": "SAVED VEHICLES",
+    "fav_empty_title": "NO VEHICLES SAVED",
+    "fav_empty_desc": "YOUR CURATED COLLECTION IS CURRENTLY EMPTY",
+    "fav_explore": "EXPLORE INVENTORY",
+    "nav_home": "Home"
   },
   "ar": {
     "nav_inventory": "المخزون",
@@ -239,6 +252,19 @@
     "home_gallery_view_full": "عرض المعرض كاملاً",
     "home_spotlight_title": "مجموعة مميزة",
     "home_spotlight_desc": "روائع مختارة بعناية",
-    "home_spotlight_link": "عرض الكل"
+    "home_spotlight_link": "عرض الكل",
+    "about_mission": "مهمتنا",
+    "about_title": "قمة<br/>الكونسيرج للسيارات",
+    "about_desc": "موتور هاب ليس مجرد وكالة سيارات. نحن خدمة وساطة وكونسيرج خاصة مكرسة لتوفير السيارات الأكثر حصرية وندرة واستثنائية على وجه الأرض للعملاء المميزين. السرية والسرعة والكمال المطلق هي معاييرنا الأساسية.",
+    "about_future": "المستقبل",
+    "about_future_title": "إعادة تعريف<br/>طليعة السيارات الكهربائية",
+    "about_future_desc1": "مع توجه العالم نحو السيارات الكهربائية، يتطور مفهوم الفخامة والأداء. نحافظ على قنوات مباشرة مع أبرز مصنعي السيارات الكهربائية الخارقة في العالم، مما يضمن حصول عملائنا على أولى النسخ من التحف الكهربائية المحدودة الإنتاج.",
+    "about_future_desc2": "من عزم الدوران الهادئ والمتصاعد للسيارات الكهربائية الحديثة المخصصة للسفر الطويل إلى السيارات الكهربائية الخارقة ذات الانسيابية المثالية التي تحطم الأرقام القياسية، يضمن لك موتور هاب مكانك في طليعة تاريخ السيارات.",
+    "fav_title": "مجموعتك",
+    "fav_subtitle": "المركبات المحفوظة",
+    "fav_empty_title": "لا توجد مركبات محفوظة",
+    "fav_empty_desc": "مجموعتك المختارة فارغة حاليًا",
+    "fav_explore": "استكشف المخزون",
+    "nav_home": "الرئيسية"
   }
 }
