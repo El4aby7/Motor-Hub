@@ -112,54 +112,6 @@
         </section>
     </main>
 
-    <script type="module">
-        let currentLang = localStorage.getItem('lang') || 'en';
-        let translations = {};
-
-        async function init() {
-            try {
-                translations = await fetch('translations.json').then(r => r.json());
-                applyLanguage();
-            } catch(e) {}
-        }
-
-        function applyLanguage() {
-            document.documentElement.lang = currentLang;
-            document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if (translations[currentLang] && translations[currentLang][key]) {
-                    if (el.hasAttribute('placeholder')) {
-                        el.placeholder = translations[currentLang][key];
-                    } else if (el.tagName === 'OPTION') {
-                        el.text = translations[currentLang][key];
-                    } else {
-                        if (translations[currentLang][key].includes('<')) {
-                             el.innerHTML = translations[currentLang][key];
-                        } else {
-                             el.textContent = translations[currentLang][key];
-                        }
-                    }
-                }
-            });
-            const lt = document.getElementById('lang-toggle');
-            if(lt) lt.textContent = currentLang === 'en' ? 'AR' : 'EN';
-            const mlt = document.getElementById('mobile-lang-toggle');
-            if(mlt) mlt.textContent = currentLang === 'en' ? 'Switch to AR' : 'Switch to EN';
-        }
-
-        const langToggleBtn = document.getElementById('lang-toggle');
-        if (langToggleBtn) {
-            langToggleBtn.addEventListener('click', () => {
-                currentLang = currentLang === 'en' ? 'ar' : 'en';
-                localStorage.setItem('lang', currentLang);
-                applyLanguage();
-            });
-        }
-
-        init();
-    </script>
-
     <!-- Floating FAB -->
     <button id="fab-btn" class="fixed bottom-8 right-8 w-14 h-14 bg-primary text-background rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform z-50">
         <span class="material-symbols-outlined">chat</span>
